@@ -1,6 +1,6 @@
 package io.hhplus.tdd.point.dto
 
-import io.hhplus.tdd.point.UserPoint
+import io.hhplus.tdd.point.data.UserPoint
 
 object PointServiceDto {
     data class Point(

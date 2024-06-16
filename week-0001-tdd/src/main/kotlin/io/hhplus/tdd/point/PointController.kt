@@ -1,5 +1,7 @@
 package io.hhplus.tdd.point
 
+import io.hhplus.tdd.point.data.PointHistory
+import io.hhplus.tdd.point.data.UserPoint
 import io.hhplus.tdd.point.response.PointResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
