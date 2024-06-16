@@ -18,4 +18,19 @@ class PointService(
         }
         return PointServiceDto.Point.of(userPointRepository.selectById(userId))
     }
+
+    fun getHistoryBy(userId: Long): PointServiceDto.History {
+        if (!userManager.existUser(userId)) {
+            throw UserException.UserNotFound("Not found user. [id] = [$userId]")
+        }
+
+        val details =
+            pointHistoryRepository.selectAllByUserId(userId)
+                .map { detail -> PointServiceDto.Detail.of(detail) }
+
+        return PointServiceDto.History(
+            userId = userId,
+            details = details,
+        )
+    }
 }

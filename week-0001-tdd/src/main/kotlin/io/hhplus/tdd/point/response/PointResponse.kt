@@ -21,10 +21,37 @@ object PointResponse {
     }
 
     data class History(
-        val id: Long,
         val userId: Long,
+        val details: List<Detail>,
+    ) {
+        companion object {
+            fun of(historyDto: PointServiceDto.History): History {
+                return History(
+                    userId = historyDto.userId,
+                    details =
+                        historyDto.details.map {
+                            Detail.of(it)
+                        },
+                )
+            }
+        }
+    }
+
+    data class Detail(
+        val detailId: Long,
         val type: TransactionType,
         val amount: Long,
         val timeMillis: Long,
-    )
+    ) {
+        companion object {
+            fun of(detailDto: PointServiceDto.Detail): Detail {
+                return Detail(
+                    detailId = detailDto.detailId,
+                    type = detailDto.type,
+                    amount = detailDto.amount,
+                    timeMillis = detailDto.timeMillis,
+                )
+            }
+        }
+    }
 }

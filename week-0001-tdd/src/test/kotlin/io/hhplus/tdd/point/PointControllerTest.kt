@@ -1,6 +1,7 @@
 package io.hhplus.tdd.point
 
 import io.hhplus.tdd.point.dto.PointServiceDto
+import io.hhplus.tdd.point.type.TransactionType
 import io.hhplus.tdd.user.exception.UserException
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -22,7 +23,7 @@ class PointControllerTest(
 
     @Test
     @DisplayName("올바르지 않은 형태의 id가 들어올 경우 Bad Request 를 리턴한다.")
-    fun `invalidTypePathVariable`() {
+    fun `getPointByInvalidTypePathVariable`() {
         // Given
         val wrongValue = "wrongValue"
 
@@ -41,18 +42,18 @@ class PointControllerTest(
         // Given
         val notExistId = -1L
         given(
-            pointService.getPointBy(notExistId)
-        ).willThrow (
-            UserException.UserNotFound("Not found user. [id] = [$notExistId]")
+            pointService.getPointBy(notExistId),
+        ).willThrow(
+            UserException.UserNotFound("Not found user. [id] = [$notExistId]"),
         )
 
         // When
-        val result = mockMvc.get("/point/1")
+        val result = mockMvc.get("/point/$notExistId")
 
         // Then
         result.andExpectAll {
             status { isInternalServerError() }
-            jsonPath("$.message") {value("에러가 발생했습니다.")}
+            jsonPath("$.message") { value("에러가 발생했습니다.") }
         }
     }
 
@@ -87,14 +88,78 @@ class PointControllerTest(
     }
 
     @Test
+    @DisplayName("올바르지 않은 형태의 id가 들어올 경우 Bad Request 를 리턴한다.")
+    fun `getHistoryByInvalidTypePathVariable`() {
+        // Given
+        val wrongValue = "wrongValue"
+
+        // When
+        val result = mockMvc.get("/point/$wrongValue/histories")
+
+        // Then
+        result.andExpect {
+            status { isBadRequest() }
+        }
+    }
+
+    @Test
+    @DisplayName("존재하지 않은 id 의 회원으로 포인트를 조회할 경우 예외를 리턴한다.")
+    fun `getHistoryByNotExistUserId`() {
+        // Given
+        val notExistId = -1L
+        given(
+            pointService.getHistoryBy(notExistId),
+        ).willThrow(
+            UserException.UserNotFound("Not found user. [id] = [$notExistId]"),
+        )
+
+        // When
+        val result = mockMvc.get("/point/$notExistId/histories")
+
+        // Then
+        result.andExpectAll {
+            status { isInternalServerError() }
+            jsonPath("$.message") { value("에러가 발생했습니다.") }
+        }
+    }
+
+    @Test
     @DisplayName("특정 유저의 포인트 충전 및 이용 내역을 조회한다.")
     fun `getUserPointHistoryApiTest`() {
-        val result =
-            mockMvc.get("/point/1/histories") {
-                accept = APPLICATION_JSON
-            }
+        // Given
+        val userId = 0L
+        val detailId = 0L
+        val type = TransactionType.USE
+        val amount = 1000L
+        val timeMillis = 1000L
+
+        given(
+            pointService.getHistoryBy(userId),
+        ).willReturn(
+            PointServiceDto.History(
+                userId = userId,
+                details =
+                    listOf(
+                        PointServiceDto.Detail(
+                            detailId = detailId,
+                            type = type,
+                            amount = amount,
+                            timeMillis = timeMillis,
+                        ),
+                    ),
+            ),
+        )
+
+        // When
+        val result = mockMvc.get("/point/$userId/histories")
+
+        // Then
         result.andExpect {
-            jsonPath("$.length()") { value(0) }
+            jsonPath("$.userId") { value(0L) }
+            jsonPath("$.details[0].detailId") { value(detailId) }
+            jsonPath("$.details[0].type") { value(type.toString()) }
+            jsonPath("$.details[0].amount") { value(amount) }
+            jsonPath("$.details[0].timeMillis") { value(timeMillis) }
         }
     }
 
