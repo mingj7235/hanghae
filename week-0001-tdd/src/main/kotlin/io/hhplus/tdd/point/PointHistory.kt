@@ -1,5 +1,7 @@
 package io.hhplus.tdd.point
 
+import io.hhplus.tdd.point.type.TransactionType
+
 data class PointHistory(
     val id: Long,
     val userId: Long,
@@ -7,12 +9,3 @@ data class PointHistory(
     val amount: Long,
     val timeMillis: Long,
 )
-
-/**
- * 포인트 트랜잭션 종류
- * - CHARGE : 충전
- * - USE : 사용
- */
-enum class TransactionType {
-    CHARGE, USE
-}
