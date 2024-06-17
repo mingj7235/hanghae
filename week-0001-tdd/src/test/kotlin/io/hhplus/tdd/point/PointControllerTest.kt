@@ -9,7 +9,7 @@ import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.http.MediaType.APPLICATION_JSON
+import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.patch
@@ -164,23 +164,142 @@ class PointControllerTest(
     }
 
     @Test
-    @DisplayName("특정 유저의 포인트를 충전한다.")
-    fun `patchChargePointApiTest`() {
-        val amount = 100L
+    @DisplayName("올바르지 않은 형태의 id가 들어올 경우 Bad Request 를 리턴한다.")
+    fun `chargePointToInvalidTypePathVariable`() {
+        // Given
+        val wrongValue = "wrongValue"
+
+        // When
+        val result = mockMvc.patch("/point/$wrongValue/charge")
+
+        // Then
+        result.andExpect {
+            status { isBadRequest() }
+        }
+    }
+
+    // request body 가 빠진 경우 예외를 리턴한다.
+    @Test
+    @DisplayName("RequestBody 가 없는 경우 Bad Request 를 리턴한다.")
+    fun `notExistRequestBody`() {
+        // Given
+        val userId = 1
+
+        // When
+        val result = mockMvc.patch("/point/$userId/charge")
+
+        // Then
+        result.andExpect {
+            status { isBadRequest() }
+        }
+    }
+
+    // 존재하지 않는 회원인 경우 충전할 수 없다.
+    @Test
+    @DisplayName("존재하지 않은 id 의 회원으로 포인트를 조회할 경우 예외를 리턴한다.")
+    fun `chargePointByNotExistUserId`() {
+        // Given
+        val notExistId = -1L
+        val amount = 1000L
+
+        given(
+            pointService.charge(
+                id = notExistId,
+                amount = 1000,
+            ),
+        ).willThrow(
+            UserException.UserNotFound("Not found user. [id] = [$notExistId]"),
+        )
+
+        // When
         val result =
-            mockMvc.patch("/point/0/charge") {
-                contentType = APPLICATION_JSON
+            mockMvc.patch("/point/$notExistId/charge") {
+                contentType = MediaType.APPLICATION_JSON
                 content = "\"\"\"\n" +
                     "                    {\n" +
                     "                        \"amount\": $amount\n" +
                     "                    }\n" +
                     "                \"\"\""
             }
+
+        // Then
+        result.andExpect {
+            status { isInternalServerError() }
+            jsonPath("$.message") { value("에러가 발생했습니다.") }
+        }
+    }
+
+    // amount 가 음수일 경우 충전할 수 없다.
+    @Test
+    @DisplayName("음수 값은 충전이 불가능하다 ")
+    fun `chargeMinusPoint`() {
+        // Given
+        val userId = 0L
+        val amount = -1000L
+
+        given(
+            pointService.charge(
+                id = userId,
+                amount = -1000,
+            ),
+        )
+
+        // When
+        val result =
+            mockMvc.patch("/point/$userId/charge") {
+                contentType = MediaType.APPLICATION_JSON
+                content = "\"\"\"\n" +
+                    "                    {\n" +
+                    "                        \"amount\": $amount\n" +
+                    "                    }\n" +
+                    "                \"\"\""
+            }
+
+        // Then
+        result.andExpect {
+            status { isInternalServerError() }
+            jsonPath("$.message") { value("에러가 발생했습니다.") }
+        }
+    }
+    //
+
+    @Test
+    @DisplayName("특정 유저의 포인트를 충전한다.")
+    fun `patchChargePointApiTest`() {
+        // Given
+        val userId = 0L
+        val amount = 100L
+
+        given(
+            pointService.charge(
+                id = userId,
+                amount = amount,
+            ),
+        ).willReturn(
+            PointServiceDto.Point(
+                id = 0L,
+                point = 100L,
+                updateMillis = 100L,
+            ),
+        )
+
+        // When
+        val result =
+            mockMvc.patch("/point/$userId/charge") {
+                contentType = MediaType.APPLICATION_JSON
+                content = "\"\"\"\n" +
+                    "                    {\n" +
+                    "                        \"amount\": $amount\n" +
+                    "                    }\n" +
+                    "                \"\"\""
+            }
+
+        // Then
         result.andExpect {
             status { isOk() }
             jsonPath("$.id") { value(0) }
-            jsonPath("$.point") { value(0) }
-            jsonPath("$.updateMillis") { value(0) }
+            jsonPath("$.point") { value(100L) }
+            jsonPath("$.updateMillis") { value(100L) }
         }
     }
 
@@ -190,7 +309,7 @@ class PointControllerTest(
         val amount = 100L
         val result =
             mockMvc.patch("/point/0/use") {
-                contentType = APPLICATION_JSON
+                contentType = MediaType.APPLICATION_JSON
                 content = "\"\"\"\n" +
                     "                    {\n" +
                     "                        \"amount\": $amount\n" +

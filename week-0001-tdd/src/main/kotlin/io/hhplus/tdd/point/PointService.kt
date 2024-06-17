@@ -33,4 +33,27 @@ class PointService(
             details = details,
         )
     }
+
+    fun charge(
+        id: Long,
+        amount: Long,
+    ): PointServiceDto.Point {
+        if (!userManager.existUser(id)) {
+            throw UserException.UserNotFound("Not found user. [id] = [$id]")
+        }
+
+        val currentUserPoint =
+            PointServiceDto.Point.of(
+                userPointRepository.selectById(id),
+            )
+
+        val chargedUserPoint = currentUserPoint.charge(amount)
+
+        userPointRepository.insertOrUpdate(
+            id = chargedUserPoint.id,
+            amount = chargedUserPoint.point,
+        )
+
+        return chargedUserPoint
+    }
 }

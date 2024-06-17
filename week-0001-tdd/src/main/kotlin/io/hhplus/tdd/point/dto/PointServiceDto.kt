@@ -19,6 +19,11 @@ object PointServiceDto {
                 )
             }
         }
+
+        fun charge(amount: Long): Point {
+            this.point + amount
+            return this
+        }
     }
 
     data class History(
