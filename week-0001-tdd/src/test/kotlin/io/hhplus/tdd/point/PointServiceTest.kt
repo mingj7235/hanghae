@@ -22,7 +22,7 @@ class PointServiceTest {
         )
 
     @Test
-    @DisplayName("Failure Case 1: 조회하려는 id 가 없는 회원의 포인트를 조회할 경우 예외를 던진다.")
+    @DisplayName("[getPointBy] Failure Case 1: 조회하려는 id 가 없는 회원의 포인트를 조회할 경우 예외를 던진다.")
     fun `getPointByNotExistUserId`() {
         val notExistUserId = 100L
 
@@ -35,7 +35,7 @@ class PointServiceTest {
     }
 
     @Test
-    @DisplayName("Success case 1 : 존재하는 id의 회원의 포인트를 조회할 경우 성공한다.")
+    @DisplayName("[getPointBy] Success case 1 : 존재하는 id의 회원의 포인트를 조회할 경우 성공한다.")
     fun `getPointByUserIdSuccessTest`() {
         val existUserId = 0L
 
@@ -45,10 +45,8 @@ class PointServiceTest {
         assertThat(point.updateMillis).isEqualTo(100L)
     }
 
-    // /histories
-    // Failure Case 1 : 조회하려는 id 가 없는 회원의 내역을 조회할 경우 예외를 던진다.
     @Test
-    @DisplayName("Failure Case 1: 조회하려는 id 가 없는 회원의 포인트를 조회할 경우 예외를 던진다.")
+    @DisplayName("[getHistoryBy] Failure Case 1: 조회하려는 id 가 없는 회원의 포인트를 조회할 경우 예외를 던진다.")
     fun `getHistoryByNotExistUserId`() {
         val notExistUserId = 100L
 
@@ -60,9 +58,8 @@ class PointServiceTest {
             .message().contains("Not found user. [id] = [$notExistUserId]")
     }
 
-    // Success Case 1: 존재하는 id 의 회원의 포인트를 조회할 경우 성공한다.
     @Test
-    @DisplayName("Success case 1 : 존재하는 id의 회원의 포인트를 조회할 경우 성공한다.")
+    @DisplayName("[getHistoryBy] Success case 1 : 존재하는 id의 회원의 포인트 내역을 조회할 경우 성공한다.")
     fun `getHistoryByUserIdSuccessTest`() {
         val existUserId = 0L
 
