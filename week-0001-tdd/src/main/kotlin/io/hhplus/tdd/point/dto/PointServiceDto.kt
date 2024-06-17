@@ -21,8 +21,12 @@ object PointServiceDto {
         }
 
         fun charge(amount: Long): Point {
-            this.point + amount
-            return this
+            val chargedPoint = this.point + amount
+            return Point(
+                id = this.id,
+                point = chargedPoint,
+                updateMillis = this.updateMillis,
+            )
         }
     }
 

@@ -35,7 +35,7 @@ class PointServiceTest {
     }
 
     @Test
-    @DisplayName("[getPointBy] Success case 1 : 존재하는 id의 회원의 포인트를 조회할 경우 성공한다.")
+    @DisplayName("[getPointBy] Success case 1: 존재하는 id의 회원의 포인트를 조회할 경우 성공한다.")
     fun `getPointByUserIdSuccessTest`() {
         val existUserId = 0L
 
@@ -59,7 +59,7 @@ class PointServiceTest {
     }
 
     @Test
-    @DisplayName("[getHistoryBy] Success case 1 : 존재하는 id의 회원의 포인트 내역을 조회할 경우 성공한다.")
+    @DisplayName("[getHistoryBy] Success case 1: 존재하는 id의 회원의 포인트 내역을 조회할 경우 성공한다.")
     fun `getHistoryByUserIdSuccessTest`() {
         val existUserId = 0L
 
@@ -73,6 +73,40 @@ class PointServiceTest {
         assertThat(history.details[1].type).isEqualTo(TransactionType.USE)
         assertThat(history.details[1].amount).isEqualTo(500L)
         assertThat(history.details[1].timeMillis).isEqualTo(500L)
+    }
+
+    @Test
+    @DisplayName("[charge] Failure Case 1: 포인트를 충전하려고 하는 회원의 id 가 없는 경우 실패한다.")
+    fun `chargeToNotExistUserId`() {
+        val notExistUserId = 100L
+        val amount = 1000L
+
+        val exception =
+            assertThrows<UserException.UserNotFound> {
+                pointService.charge(
+                    id = notExistUserId,
+                    amount = amount,
+                )
+            }
+        assertThat(exception)
+            .message().contains("Not found user. [id] = [$notExistUserId]")
+    }
+
+    // 성공 - 올바른 userId 와 amount 가 주어진 경우
+    @Test
+    @DisplayName("[charge] Success Case 1: 올바른 userId 와 amount 가 주어졌을 때 충전이 성공한다.")
+    fun `chargeSuccessTest`() {
+        val userId = 0L
+        val amount = 1000L
+
+        val chargedUserPoint =
+            pointService.charge(
+                id = userId,
+                amount = amount,
+            )
+
+        assertThat(chargedUserPoint.id).isEqualTo(0L)
+        assertThat(chargedUserPoint.point).isEqualTo(1100L)
     }
 
     class UserManagerStub : UserManager(UserRepositorySub()) {
@@ -143,7 +177,10 @@ class PointServiceTest {
             id: Long,
             amount: Long,
         ): UserPoint {
-            TODO("Not yet implemented")
+            return when (id) {
+                0L -> UserPoint(0L, 100L + amount, 100L)
+                else -> UserPoint(-1L, -100L, -100L)
+            }
         }
     }
 }
