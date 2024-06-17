@@ -47,8 +47,36 @@ class PointServiceTest {
 
     // /histories
     // Failure Case 1 : 조회하려는 id 가 없는 회원의 내역을 조회할 경우 예외를 던진다.
+    @Test
+    @DisplayName("Failure Case 1: 조회하려는 id 가 없는 회원의 포인트를 조회할 경우 예외를 던진다.")
+    fun `getHistoryByNotExistUserId`() {
+        val notExistUserId = 100L
+
+        val exception =
+            assertThrows<UserException.UserNotFound> {
+                pointService.getHistoryBy(userId = notExistUserId)
+            }
+        assertThat(exception)
+            .message().contains("Not found user. [id] = [$notExistUserId]")
+    }
 
     // Success Case 1: 존재하는 id 의 회원의 포인트를 조회할 경우 성공한다.
+    @Test
+    @DisplayName("Success case 1 : 존재하는 id의 회원의 포인트를 조회할 경우 성공한다.")
+    fun `getHistoryByUserIdSuccessTest`() {
+        val existUserId = 0L
+
+        val history = pointService.getHistoryBy(existUserId)
+        assertThat(history.userId).isEqualTo(0L)
+        assertThat(history.details[0].detailId).isEqualTo(0L)
+        assertThat(history.details[0].type).isEqualTo(TransactionType.CHARGE)
+        assertThat(history.details[0].amount).isEqualTo(1000L)
+        assertThat(history.details[0].timeMillis).isEqualTo(1000L)
+        assertThat(history.details[1].detailId).isEqualTo(1L)
+        assertThat(history.details[1].type).isEqualTo(TransactionType.USE)
+        assertThat(history.details[1].amount).isEqualTo(500L)
+        assertThat(history.details[1].timeMillis).isEqualTo(500L)
+    }
 
     class UserManagerStub : UserManager(UserRepositorySub()) {
         override fun existUser(userId: Long): Boolean {
@@ -81,7 +109,26 @@ class PointServiceTest {
         }
 
         override fun selectAllByUserId(userId: Long): List<PointHistory> {
-            TODO("Not yet implemented")
+            return when (userId) {
+                0L ->
+                    listOf(
+                        PointHistory(
+                            id = 0L,
+                            userId = 0L,
+                            type = TransactionType.CHARGE,
+                            amount = 1000L,
+                            timeMillis = 1000L,
+                        ),
+                        PointHistory(
+                            id = 1L,
+                            userId = 0L,
+                            type = TransactionType.USE,
+                            amount = 500L,
+                            timeMillis = 500L,
+                        ),
+                    )
+                else -> emptyList()
+            }
         }
     }
 
