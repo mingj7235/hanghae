@@ -9,17 +9,31 @@ import io.hhplus.tdd.point.type.TransactionType
 import io.hhplus.tdd.user.data.User
 import io.hhplus.tdd.user.exception.UserException
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.ArgumentMatchers.anyLong
+import org.mockito.ArgumentMatchers.eq
+import org.mockito.Mockito.spy
+import org.mockito.Mockito.verify
+import org.mockito.MockitoAnnotations
 
 class PointServiceTest {
-    private val pointService =
-        PointService(
-            userManager = UserManagerStub(),
-            pointHistoryRepository = PointHistoryRepositoryStub(),
-            userPointRepository = UserPointRepositoryStub(),
-        )
+    private lateinit var pointService: PointService
+    private lateinit var pointHistoryRepository: PointHistoryRepository
+
+    @BeforeEach
+    fun setUp() {
+        MockitoAnnotations.openMocks(this)
+        pointHistoryRepository = spy(PointHistoryRepositoryStub())
+        pointService =
+            PointService(
+                userManager = UserManagerStub(),
+                pointHistoryRepository = pointHistoryRepository,
+                userPointRepository = UserPointRepositoryStub(),
+            )
+    }
 
     @Test
     @DisplayName("[getPointBy] Failure Case 1: 조회하려는 id 가 없는 회원의 포인트를 조회할 경우 예외를 던진다.")
@@ -109,6 +123,22 @@ class PointServiceTest {
         assertThat(chargedUserPoint.point).isEqualTo(1100L)
     }
 
+    @Test
+    @DisplayName("[charge] Success Case 2: 올바른 userId 와 amount 가 주어졌을 때, 충전 내역이 저장된다.")
+    fun `chargeSuccessHistorySaveTest`() {
+        val userId = 0L
+        val amount = 1000L
+
+        val chargedUserPoint = pointService.charge(id = userId, amount = amount)
+
+        verify(pointHistoryRepository).insert(
+            eq(userId),
+            eq(amount),
+            eq(TransactionType.CHARGE),
+            anyLong(),
+        )
+    }
+
     class UserManagerStub : UserManager(UserRepositorySub()) {
         override fun existUser(userId: Long): Boolean {
             return when (userId) {
@@ -136,7 +166,24 @@ class PointServiceTest {
             transactionType: TransactionType,
             updateMillis: Long,
         ): PointHistory {
-            TODO("Not yet implemented")
+            return when (id) {
+                0L ->
+                    PointHistory(
+                        id = 1L,
+                        userId = 0L,
+                        type = TransactionType.CHARGE,
+                        amount = 1000L,
+                        timeMillis = 1000L,
+                    )
+                else ->
+                    PointHistory(
+                        id = -1L,
+                        userId = -1L,
+                        type = TransactionType.CHARGE,
+                        amount = -1L,
+                        timeMillis = -1L,
+                    )
+            }
         }
 
         override fun selectAllByUserId(userId: Long): List<PointHistory> {

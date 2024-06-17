@@ -3,6 +3,7 @@ package io.hhplus.tdd.point
 import io.hhplus.tdd.database.PointHistoryRepository
 import io.hhplus.tdd.database.UserPointRepository
 import io.hhplus.tdd.point.dto.PointServiceDto
+import io.hhplus.tdd.point.type.TransactionType
 import io.hhplus.tdd.user.exception.UserException
 import org.springframework.stereotype.Service
 
@@ -52,6 +53,13 @@ class PointService(
         userPointRepository.insertOrUpdate(
             id = chargedUserPoint.id,
             amount = chargedUserPoint.point,
+        )
+
+        pointHistoryRepository.insert(
+            id = id,
+            amount = amount,
+            transactionType = TransactionType.CHARGE,
+            updateMillis = System.currentTimeMillis(),
         )
 
         return chargedUserPoint
