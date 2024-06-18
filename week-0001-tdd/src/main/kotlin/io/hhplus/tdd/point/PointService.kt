@@ -88,6 +88,13 @@ class PointService(
                 ),
             )
 
+        pointHistoryRepository.insert(
+            id = id,
+            amount = amount,
+            transactionType = TransactionType.USE,
+            updateMillis = usedUserPoint.updateMillis,
+        )
+
         return usedUserPoint
     }
 }

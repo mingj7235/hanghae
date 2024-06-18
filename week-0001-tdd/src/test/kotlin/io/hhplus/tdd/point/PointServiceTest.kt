@@ -224,4 +224,31 @@ class PointServiceTest {
         assertThat(usedUserPoint.id).isEqualTo(usedPoint.id)
         assertThat(usedUserPoint.point).isEqualTo(usedPoint.point)
     }
+
+    @Test
+    @DisplayName("[use] Success Case 2 : 포인트 사용에 성공하면, history 를 저장한다.")
+    fun `usePointSuccssHistorySaveTest`() {
+        val userId = 0L
+        val amount = 1000L
+        val userPoint = UserPoint(userId, 3000L, 3000L)
+        val usedPoint = UserPoint(userId, 2000L, 20000L)
+
+        `when`(userManager.existUser(userId)).thenReturn(true)
+        `when`(userPointRepository.selectById(userId)).thenReturn(userPoint)
+        `when`(
+            userPointRepository.insertOrUpdate(
+                id = userId,
+                amount = usedPoint.point,
+            ),
+        ).thenReturn(usedPoint)
+
+        val usedUserPoint = pointService.use(id = userId, amount = amount)
+
+        verify(pointHistoryRepository, times(1)).insert(
+            id = usedUserPoint.id,
+            amount = amount,
+            transactionType = TransactionType.USE,
+            updateMillis = usedUserPoint.updateMillis,
+        )
+    }
 }
