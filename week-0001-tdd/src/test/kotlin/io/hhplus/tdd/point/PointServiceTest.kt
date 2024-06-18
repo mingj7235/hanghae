@@ -4,6 +4,7 @@ import io.hhplus.tdd.database.PointHistoryRepository
 import io.hhplus.tdd.database.UserPointRepository
 import io.hhplus.tdd.point.data.PointHistory
 import io.hhplus.tdd.point.data.UserPoint
+import io.hhplus.tdd.point.exception.PointException
 import io.hhplus.tdd.point.type.TransactionType
 import io.hhplus.tdd.user.exception.UserException
 import org.assertj.core.api.Assertions.assertThat
@@ -163,7 +164,7 @@ class PointServiceTest {
     }
 
     @Test
-    @DisplayName("[use] Failure Case 1: 포인트를 충전하려고 하는 회원의 id 가 없는 경우 실패한다.")
+    @DisplayName("[use] Failure Case 1: 포인트를 사용하려고 하는 회원의 id 가 없는 경우 실패한다.")
     fun `useToNotExistUserId`() {
         val notExistUserId = 100L
         val amount = 1000L
@@ -176,5 +177,23 @@ class PointServiceTest {
             }
         assertThat(exception)
             .message().contains("Not found user. [id] = [$notExistUserId]")
+    }
+
+    @Test
+    @DisplayName("[use] Failure Case 2 : 포인트를 사용하려고 하는 회원의 기존 포인트가 사용하려는 포인트보다 적을 경우 실패한다.")
+    fun `tryToOverPoint`() {
+        val userId = 0L
+        val amount = 1000L
+        val userPoint = UserPoint(0L, 500L, 500L)
+
+        `when`(userManager.existUser(userId)).thenReturn(true)
+        `when`(userPointRepository.selectById(userId)).thenReturn(userPoint)
+
+        val exception =
+            assertThrows<PointException.InsufficientPointsException> {
+                pointService.use(id = userId, amount = amount)
+            }
+        assertThat(exception)
+            .message().contains("Insufficient Point. Current Point : ${userPoint.point}")
     }
 }

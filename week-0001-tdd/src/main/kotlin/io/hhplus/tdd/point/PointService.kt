@@ -3,6 +3,7 @@ package io.hhplus.tdd.point
 import io.hhplus.tdd.database.PointHistoryRepository
 import io.hhplus.tdd.database.UserPointRepository
 import io.hhplus.tdd.point.dto.PointServiceDto
+import io.hhplus.tdd.point.exception.PointException
 import io.hhplus.tdd.point.type.TransactionType
 import io.hhplus.tdd.user.exception.UserException
 import org.springframework.stereotype.Service
@@ -69,6 +70,12 @@ class PointService(
     ): PointServiceDto.Point {
         if (!userManager.existUser(id)) {
             throw UserException.UserNotFound("Not found user. [id] = [$id]")
+        }
+
+        val currentUserPoint = userPointRepository.selectById(id)
+
+        if (amount > currentUserPoint.point) {
+            throw PointException.InsufficientPointsException("Insufficient Point. Current Point : ${currentUserPoint.point}")
         }
 
         TODO()

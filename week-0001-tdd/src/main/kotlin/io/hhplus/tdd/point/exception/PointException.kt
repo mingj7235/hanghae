@@ -4,4 +4,8 @@ object PointException {
     class InvalidChargePointAmountException(
         errorMessage: String,
     ) : RuntimeException(errorMessage)
+
+    class InsufficientPointsException(
+        errorMessage: String,
+    ) : RuntimeException(errorMessage)
 }
