@@ -67,6 +67,10 @@ class PointService(
         id: Long,
         amount: Long,
     ): PointServiceDto.Point {
+        if (!userManager.existUser(id)) {
+            throw UserException.UserNotFound("Not found user. [id] = [$id]")
+        }
+
         TODO()
     }
 }

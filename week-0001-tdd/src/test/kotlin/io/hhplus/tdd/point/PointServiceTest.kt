@@ -161,4 +161,20 @@ class PointServiceTest {
             updateMillis = chargedUserPoint.updateMillis,
         )
     }
+
+    @Test
+    @DisplayName("[use] Failure Case 1: 포인트를 충전하려고 하는 회원의 id 가 없는 경우 실패한다.")
+    fun `useToNotExistUserId`() {
+        val notExistUserId = 100L
+        val amount = 1000L
+
+        `when`(userManager.existUser(notExistUserId)).thenReturn(false)
+
+        val exception =
+            assertThrows<UserException.UserNotFound> {
+                pointService.use(id = notExistUserId, amount = amount)
+            }
+        assertThat(exception)
+            .message().contains("Not found user. [id] = [$notExistUserId]")
+    }
 }
