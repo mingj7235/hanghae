@@ -19,15 +19,6 @@ object PointServiceDto {
                 )
             }
         }
-
-        fun charge(amount: Long): Point {
-            val chargedPoint = this.point + amount
-            return Point(
-                id = this.id,
-                point = chargedPoint,
-                updateMillis = this.updateMillis,
-            )
-        }
     }
 
     data class History(

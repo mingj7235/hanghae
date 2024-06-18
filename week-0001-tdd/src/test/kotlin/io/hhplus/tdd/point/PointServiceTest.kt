@@ -2,43 +2,46 @@ package io.hhplus.tdd.point
 
 import io.hhplus.tdd.database.PointHistoryRepository
 import io.hhplus.tdd.database.UserPointRepository
-import io.hhplus.tdd.database.UserRepository
 import io.hhplus.tdd.point.data.PointHistory
 import io.hhplus.tdd.point.data.UserPoint
 import io.hhplus.tdd.point.type.TransactionType
-import io.hhplus.tdd.user.data.User
 import io.hhplus.tdd.user.exception.UserException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.mockito.ArgumentMatchers.anyLong
-import org.mockito.ArgumentMatchers.eq
-import org.mockito.Mockito.spy
+import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 
 class PointServiceTest {
-    private lateinit var pointService: PointService
+    @Mock
     private lateinit var pointHistoryRepository: PointHistoryRepository
+
+    @Mock
+    private lateinit var userManager: UserManager
+
+    @Mock
+    private lateinit var userPointRepository: UserPointRepository
+
+    @InjectMocks
+    private lateinit var pointService: PointService
 
     @BeforeEach
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-        pointHistoryRepository = spy(PointHistoryRepositoryStub())
-        pointService =
-            PointService(
-                userManager = UserManagerStub(),
-                pointHistoryRepository = pointHistoryRepository,
-                userPointRepository = UserPointRepositoryStub(),
-            )
     }
 
     @Test
     @DisplayName("[getPointBy] Failure Case 1: 조회하려는 id 가 없는 회원의 포인트를 조회할 경우 예외를 던진다.")
     fun `getPointByNotExistUserId`() {
         val notExistUserId = 100L
+
+        `when`(userManager.existUser(notExistUserId)).thenReturn(false)
 
         val exception =
             assertThrows<UserException.UserNotFound> {
@@ -52,6 +55,10 @@ class PointServiceTest {
     @DisplayName("[getPointBy] Success case 1: 존재하는 id의 회원의 포인트를 조회할 경우 성공한다.")
     fun `getPointByUserIdSuccessTest`() {
         val existUserId = 0L
+        val userPoint = UserPoint(0L, 100L, 100L)
+
+        `when`(userManager.existUser(existUserId)).thenReturn(true)
+        `when`(userPointRepository.selectById(existUserId)).thenReturn(userPoint)
 
         val point = pointService.getPointBy(existUserId)
         assertThat(point.id).isEqualTo(0L)
@@ -63,6 +70,8 @@ class PointServiceTest {
     @DisplayName("[getHistoryBy] Failure Case 1: 조회하려는 id 가 없는 회원의 포인트를 조회할 경우 예외를 던진다.")
     fun `getHistoryByNotExistUserId`() {
         val notExistUserId = 100L
+
+        `when`(userManager.existUser(notExistUserId)).thenReturn(false)
 
         val exception =
             assertThrows<UserException.UserNotFound> {
@@ -76,6 +85,14 @@ class PointServiceTest {
     @DisplayName("[getHistoryBy] Success case 1: 존재하는 id의 회원의 포인트 내역을 조회할 경우 성공한다.")
     fun `getHistoryByUserIdSuccessTest`() {
         val existUserId = 0L
+        val historyList =
+            listOf(
+                PointHistory(0L, 0L, TransactionType.CHARGE, 1000L, 1000L),
+                PointHistory(1L, 0L, TransactionType.USE, 500L, 500L),
+            )
+
+        `when`(userManager.existUser(existUserId)).thenReturn(true)
+        `when`(pointHistoryRepository.selectAllByUserId(existUserId)).thenReturn(historyList)
 
         val history = pointService.getHistoryBy(existUserId)
         assertThat(history.userId).isEqualTo(0L)
@@ -95,29 +112,29 @@ class PointServiceTest {
         val notExistUserId = 100L
         val amount = 1000L
 
+        `when`(userManager.existUser(notExistUserId)).thenReturn(false)
+
         val exception =
             assertThrows<UserException.UserNotFound> {
-                pointService.charge(
-                    id = notExistUserId,
-                    amount = amount,
-                )
+                pointService.charge(id = notExistUserId, amount = amount)
             }
         assertThat(exception)
             .message().contains("Not found user. [id] = [$notExistUserId]")
     }
 
-    // 성공 - 올바른 userId 와 amount 가 주어진 경우
     @Test
     @DisplayName("[charge] Success Case 1: 올바른 userId 와 amount 가 주어졌을 때 충전이 성공한다.")
     fun `chargeSuccessTest`() {
         val userId = 0L
         val amount = 1000L
+        val userPoint = UserPoint(0L, 100L, 100L)
+        val updatedUserPoint = UserPoint(0L, 1100L, 100L)
 
-        val chargedUserPoint =
-            pointService.charge(
-                id = userId,
-                amount = amount,
-            )
+        `when`(userManager.existUser(userId)).thenReturn(true)
+        `when`(userPointRepository.selectById(userId)).thenReturn(userPoint)
+        `when`(userPointRepository.insertOrUpdate(userId, userPoint.point + amount)).thenReturn(updatedUserPoint)
+
+        val chargedUserPoint = pointService.charge(id = userId, amount = amount)
 
         assertThat(chargedUserPoint.id).isEqualTo(0L)
         assertThat(chargedUserPoint.point).isEqualTo(1100L)
@@ -128,106 +145,20 @@ class PointServiceTest {
     fun `chargeSuccessHistorySaveTest`() {
         val userId = 0L
         val amount = 1000L
+        val userPoint = UserPoint(0L, 100L, 100L)
+        val updatedUserPoint = UserPoint(0L, 1100L, 100L)
+
+        `when`(userManager.existUser(userId)).thenReturn(true)
+        `when`(userPointRepository.selectById(userId)).thenReturn(userPoint)
+        `when`(userPointRepository.insertOrUpdate(userId, userPoint.point + amount)).thenReturn(updatedUserPoint)
 
         val chargedUserPoint = pointService.charge(id = userId, amount = amount)
 
-        verify(pointHistoryRepository).insert(
-            eq(userId),
-            eq(amount),
-            eq(TransactionType.CHARGE),
-            anyLong(),
+        verify(pointHistoryRepository, times(1)).insert(
+            id = chargedUserPoint.id,
+            amount = amount,
+            transactionType = TransactionType.CHARGE,
+            updateMillis = chargedUserPoint.updateMillis,
         )
-    }
-
-    class UserManagerStub : UserManager(UserRepositorySub()) {
-        override fun existUser(userId: Long): Boolean {
-            return when (userId) {
-                0L, 1L, 2L -> true
-                else -> false
-            }
-        }
-    }
-
-    class UserRepositorySub : UserRepository {
-        override fun findBy(id: Long): User? {
-            return when (id) {
-                0L -> User(0L)
-                1L -> User(1L)
-                2L -> User(2L)
-                else -> null
-            }
-        }
-    }
-
-    class PointHistoryRepositoryStub : PointHistoryRepository {
-        override fun insert(
-            id: Long,
-            amount: Long,
-            transactionType: TransactionType,
-            updateMillis: Long,
-        ): PointHistory {
-            return when (id) {
-                0L ->
-                    PointHistory(
-                        id = 1L,
-                        userId = 0L,
-                        type = TransactionType.CHARGE,
-                        amount = 1000L,
-                        timeMillis = 1000L,
-                    )
-                else ->
-                    PointHistory(
-                        id = -1L,
-                        userId = -1L,
-                        type = TransactionType.CHARGE,
-                        amount = -1L,
-                        timeMillis = -1L,
-                    )
-            }
-        }
-
-        override fun selectAllByUserId(userId: Long): List<PointHistory> {
-            return when (userId) {
-                0L ->
-                    listOf(
-                        PointHistory(
-                            id = 0L,
-                            userId = 0L,
-                            type = TransactionType.CHARGE,
-                            amount = 1000L,
-                            timeMillis = 1000L,
-                        ),
-                        PointHistory(
-                            id = 1L,
-                            userId = 0L,
-                            type = TransactionType.USE,
-                            amount = 500L,
-                            timeMillis = 500L,
-                        ),
-                    )
-                else -> emptyList()
-            }
-        }
-    }
-
-    class UserPointRepositoryStub : UserPointRepository {
-        override fun selectById(id: Long): UserPoint {
-            return when (id) {
-                0L -> UserPoint(0L, 100L, 100L)
-                1L -> UserPoint(1L, 200L, 200L)
-                2L -> UserPoint(2L, 300L, 300L)
-                else -> UserPoint(-1L, -100L, -100L)
-            }
-        }
-
-        override fun insertOrUpdate(
-            id: Long,
-            amount: Long,
-        ): UserPoint {
-            return when (id) {
-                0L -> UserPoint(0L, 100L + amount, 100L)
-                else -> UserPoint(-1L, -100L, -100L)
-            }
-        }
     }
 }

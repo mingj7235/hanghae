@@ -43,23 +43,21 @@ class PointService(
             throw UserException.UserNotFound("Not found user. [id] = [$id]")
         }
 
-        val currentUserPoint =
+        val currentUserPoint = userPointRepository.selectById(id)
+
+        val chargedUserPoint =
             PointServiceDto.Point.of(
-                userPointRepository.selectById(id),
+                userPointRepository.insertOrUpdate(
+                    id = currentUserPoint.id,
+                    amount = currentUserPoint.point + amount,
+                ),
             )
-
-        val chargedUserPoint = currentUserPoint.charge(amount)
-
-        userPointRepository.insertOrUpdate(
-            id = chargedUserPoint.id,
-            amount = chargedUserPoint.point,
-        )
 
         pointHistoryRepository.insert(
             id = id,
             amount = amount,
             transactionType = TransactionType.CHARGE,
-            updateMillis = System.currentTimeMillis(),
+            updateMillis = chargedUserPoint.updateMillis,
         )
 
         return chargedUserPoint
