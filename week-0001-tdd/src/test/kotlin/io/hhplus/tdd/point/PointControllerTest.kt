@@ -178,7 +178,6 @@ class PointControllerTest(
         }
     }
 
-    // request body 가 빠진 경우 예외를 리턴한다.
     @Test
     @DisplayName("RequestBody 가 없는 경우 Bad Request 를 리턴한다.")
     fun `notExistRequestBody`() {
@@ -194,7 +193,6 @@ class PointControllerTest(
         }
     }
 
-    // 존재하지 않는 회원인 경우 충전할 수 없다.
     @Test
     @DisplayName("존재하지 않은 id 의 회원으로 포인트를 조회할 경우 예외를 리턴한다.")
     fun `chargePointByNotExistUserId`() {
@@ -229,7 +227,6 @@ class PointControllerTest(
         }
     }
 
-    // amount 가 음수일 경우 충전할 수 없다.
     @Test
     @DisplayName("음수 값은 충전이 불가능하다 ")
     fun `chargeMinusPoint`() {
@@ -321,6 +318,40 @@ class PointControllerTest(
             jsonPath("$.id") { value(0) }
             jsonPath("$.point") { value(0) }
             jsonPath("$.updateMillis") { value(0) }
+        }
+    }
+
+    @Test
+    @DisplayName("존재하지 않은 id 의 회원으로 포인트를 조회할 경우 예외를 리턴한다.")
+    fun `usePointByNotExistUserId`() {
+        // Given
+        val notExistId = -1L
+        val amount = 1000L
+
+        given(
+            pointService.use(
+                id = notExistId,
+                amount = 1000,
+            ),
+        ).willThrow(
+            UserException.UserNotFound("Not found user. [id] = [$notExistId]"),
+        )
+
+        // When
+        val result =
+            mockMvc.patch("/point/$notExistId/use") {
+                contentType = MediaType.APPLICATION_JSON
+                content = "\"\"\"\n" +
+                    "                    {\n" +
+                    "                        \"amount\": $amount\n" +
+                    "                    }\n" +
+                    "                \"\"\""
+            }
+
+        // Then
+        result.andExpect {
+            status { isInternalServerError() }
+            jsonPath("$.message") { value("에러가 발생했습니다.") }
         }
     }
 }

@@ -1,6 +1,5 @@
 package io.hhplus.tdd.point
 
-import io.hhplus.tdd.point.data.UserPoint
 import io.hhplus.tdd.point.exception.PointException
 import io.hhplus.tdd.point.response.PointResponse
 import org.slf4j.Logger
@@ -67,7 +66,9 @@ class PointController(
     fun use(
         @PathVariable id: Long,
         @RequestBody amount: Long,
-    ): UserPoint {
-        return UserPoint(0, 0, 0)
+    ): PointResponse.Point {
+        return PointResponse.Point.of(
+            pointService.use(id, amount),
+        )
     }
 }

@@ -62,4 +62,11 @@ class PointService(
 
         return chargedUserPoint
     }
+
+    fun use(
+        id: Long,
+        amount: Long,
+    ): PointServiceDto.Point {
+        TODO()
+    }
 }
