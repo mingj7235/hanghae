@@ -74,10 +74,20 @@ class PointService(
 
         val currentUserPoint = userPointRepository.selectById(id)
 
-        if (amount > currentUserPoint.point) {
+        val remainingPoint = currentUserPoint.point - amount
+
+        if (remainingPoint < 0) {
             throw PointException.InsufficientPointsException("Insufficient Point. Current Point : ${currentUserPoint.point}")
         }
 
-        TODO()
+        val usedUserPoint =
+            PointServiceDto.Point.of(
+                userPointRepository.insertOrUpdate(
+                    id = currentUserPoint.id,
+                    amount = remainingPoint,
+                ),
+            )
+
+        return usedUserPoint
     }
 }

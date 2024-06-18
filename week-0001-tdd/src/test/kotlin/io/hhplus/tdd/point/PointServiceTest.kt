@@ -164,6 +164,11 @@ class PointServiceTest {
     }
 
     @Test
+    fun `동시에 충전하는 경우 순차적으로 성공한다`() {
+        TODO()
+    }
+
+    @Test
     @DisplayName("[use] Failure Case 1: 포인트를 사용하려고 하는 회원의 id 가 없는 경우 실패한다.")
     fun `useToNotExistUserId`() {
         val notExistUserId = 100L
@@ -195,5 +200,28 @@ class PointServiceTest {
             }
         assertThat(exception)
             .message().contains("Insufficient Point. Current Point : ${userPoint.point}")
+    }
+
+    @Test
+    @DisplayName("[use] Success Case 1 : 포인트 사용에 성공한다.")
+    fun `usePointSuccssTest`() {
+        val userId = 0L
+        val amount = 1000L
+        val userPoint = UserPoint(userId, 3000L, 3000L)
+        val usedPoint = UserPoint(userId, 2000L, 20000L)
+
+        `when`(userManager.existUser(userId)).thenReturn(true)
+        `when`(userPointRepository.selectById(userId)).thenReturn(userPoint)
+        `when`(
+            userPointRepository.insertOrUpdate(
+                id = userId,
+                amount = usedPoint.point,
+            ),
+        ).thenReturn(usedPoint)
+
+        val usedUserPoint = pointService.use(id = userId, amount = amount)
+
+        assertThat(usedUserPoint.id).isEqualTo(usedPoint.id)
+        assertThat(usedUserPoint.point).isEqualTo(usedPoint.point)
     }
 }
