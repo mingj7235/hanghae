@@ -1,6 +1,8 @@
 package io.hhplus.tdd.point
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.hhplus.tdd.point.dto.PointServiceDto
+import io.hhplus.tdd.point.exception.PointException
 import io.hhplus.tdd.point.type.TransactionType
 import io.hhplus.tdd.user.exception.UserException
 import org.junit.jupiter.api.DisplayName
@@ -17,6 +19,7 @@ import org.springframework.test.web.servlet.patch
 @WebMvcTest(PointController::class)
 class PointControllerTest(
     @Autowired val mockMvc: MockMvc,
+    @Autowired val objectMapper: ObjectMapper,
 ) {
     @MockBean
     lateinit var pointService: PointService
@@ -239,17 +242,15 @@ class PointControllerTest(
                 id = userId,
                 amount = -1000,
             ),
+        ).willThrow(
+            PointException.InvalidChargePointAmountException("Invalid amount"),
         )
 
         // When
         val result =
             mockMvc.patch("/point/$userId/charge") {
                 contentType = MediaType.APPLICATION_JSON
-                content = "\"\"\"\n" +
-                    "                    {\n" +
-                    "                        \"amount\": $amount\n" +
-                    "                    }\n" +
-                    "                \"\"\""
+                content = objectMapper.writeValueAsString(amount)
             }
 
         // Then
@@ -266,29 +267,25 @@ class PointControllerTest(
         // Given
         val userId = 0L
         val amount = 100L
+        val userPoint =
+            PointServiceDto.Point(
+                id = 0L,
+                point = 100L,
+                updateMillis = 100L,
+            )
 
         given(
             pointService.charge(
                 id = userId,
                 amount = amount,
             ),
-        ).willReturn(
-            PointServiceDto.Point(
-                id = 0L,
-                point = 100L,
-                updateMillis = 100L,
-            ),
-        )
+        ).willReturn(userPoint)
 
         // When
         val result =
             mockMvc.patch("/point/$userId/charge") {
                 contentType = MediaType.APPLICATION_JSON
-                content = "\"\"\"\n" +
-                    "                    {\n" +
-                    "                        \"amount\": $amount\n" +
-                    "                    }\n" +
-                    "                \"\"\""
+                content = objectMapper.writeValueAsString(amount)
             }
 
         // Then
@@ -297,27 +294,6 @@ class PointControllerTest(
             jsonPath("$.id") { value(0) }
             jsonPath("$.point") { value(100L) }
             jsonPath("$.updateMillis") { value(100L) }
-        }
-    }
-
-    @Test
-    @DisplayName("특정 유저의 포인트를 사용한다.")
-    fun `patchUsePointApiTest`() {
-        val amount = 100L
-        val result =
-            mockMvc.patch("/point/0/use") {
-                contentType = MediaType.APPLICATION_JSON
-                content = "\"\"\"\n" +
-                    "                    {\n" +
-                    "                        \"amount\": $amount\n" +
-                    "                    }\n" +
-                    "                \"\"\""
-            }
-        result.andExpect {
-            status { isOk() }
-            jsonPath("$.id") { value(0) }
-            jsonPath("$.point") { value(0) }
-            jsonPath("$.updateMillis") { value(0) }
         }
     }
 
@@ -341,17 +317,46 @@ class PointControllerTest(
         val result =
             mockMvc.patch("/point/$notExistId/use") {
                 contentType = MediaType.APPLICATION_JSON
-                content = "\"\"\"\n" +
-                    "                    {\n" +
-                    "                        \"amount\": $amount\n" +
-                    "                    }\n" +
-                    "                \"\"\""
+                content = objectMapper.writeValueAsString(amount)
             }
 
         // Then
         result.andExpect {
             status { isInternalServerError() }
             jsonPath("$.message") { value("에러가 발생했습니다.") }
+        }
+    }
+
+    @Test
+    @DisplayName("특정 유저의 포인트를 사용한다.")
+    fun `patchUsePointApiTest`() {
+        // Given
+        val userId = 0L
+        val amount = 1000L
+        val userPoint =
+            PointServiceDto.Point(
+                id = 0L,
+                point = 2000L,
+                updateMillis = 100L,
+            )
+
+        given(
+            pointService.use(
+                id = userId,
+                amount = amount,
+            ),
+        ).willReturn(userPoint)
+
+        val result =
+            mockMvc.patch("/point/$userId/use") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(amount)
+            }
+        result.andExpect {
+            status { isOk() }
+            jsonPath("$.id") { value(0L) }
+            jsonPath("$.point") { value(2000L) }
+            jsonPath("$.updateMillis") { value(100L) }
         }
     }
 }
