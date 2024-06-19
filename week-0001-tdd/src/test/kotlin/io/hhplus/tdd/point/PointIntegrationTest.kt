@@ -38,6 +38,16 @@ class PointIntegrationTest {
     @DisplayName("[point] 회원의 포인트 조회 API 통합 테스트")
     inner class PointApiTest {
         @Test
+        @DisplayName("[Failure case 1] 존재하지 않은 회원의 포인트를 조회했을 때, 예외를 리턴한다.")
+        fun `존재하지 않은 회원의 포인트를 조회하면 예외를 리턴한다`() {
+            mockMvc.get("/point/$NON_EXISTED_USER_ID")
+                .andExpect {
+                    status { isBadRequest() }
+                    jsonPath("$.message") { value("Not found user. [id] = [$NON_EXISTED_USER_ID]") }
+                }
+        }
+
+        @Test
         @DisplayName("[Success case] 존재하는 id의 회원의 포인트를 조회할 경우 성공한다.")
         fun `getPointByUserIdSuccessTest`() {
             // Given
@@ -61,5 +71,9 @@ class PointIntegrationTest {
                 jsonPath("$.updateMillis") { value(userPoint.updateMillis) }
             }
         }
+    }
+
+    companion object {
+        val NON_EXISTED_USER_ID = -1L
     }
 }
