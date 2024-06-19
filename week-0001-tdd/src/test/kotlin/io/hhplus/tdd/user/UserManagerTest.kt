@@ -4,6 +4,7 @@ import io.hhplus.tdd.database.UserRepository
 import io.hhplus.tdd.point.UserManager
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.mockito.InjectMocks
@@ -23,6 +24,7 @@ class UserManagerTest {
     }
 
     @Test
+    @DisplayName("[existUser] 존재하지 않은 userId 를 조회했을 때, false 를 리턴한다. ")
     fun `notExistUserTest`() {
         // Given
         val notExistUserId = -1L
