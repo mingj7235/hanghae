@@ -3,6 +3,7 @@ package io.hhplus.tdd.point
 import io.hhplus.tdd.database.PointHistoryRepository
 import io.hhplus.tdd.database.UserPointRepository
 import io.hhplus.tdd.database.UserRepository
+import io.hhplus.tdd.point.type.TransactionType
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -84,6 +85,30 @@ class PointIntegrationTest {
                     status { isBadRequest() }
                     jsonPath("$.message") { value("Not found user. [id] = [$NON_EXISTED_USER_ID]") }
                 }
+        }
+
+        @Test
+        fun `한 유저가 충전을 1회를 했을 때 충전 내역 조회가 성공한다`() {
+            // Given
+            val existUserId = 0L
+            val chargingPoint = 10000L
+
+            val user = userRepository.save(existUserId)
+            val chargedUserPoint = pointService.charge(existUserId, chargingPoint)
+
+            val result =
+                mockMvc.get("/point/$existUserId/histories") {
+                    contentType = MediaType.APPLICATION_JSON
+                }
+
+            result.andExpectAll {
+                status { isOk() }
+                jsonPath("$.userId") { value(user.id) }
+                jsonPath("$.details[0].detailId") { value(1L) }
+                jsonPath("$.details[0].type") { value(TransactionType.CHARGE.toString()) }
+                jsonPath("$.details[0].amount") { value(chargedUserPoint.point) }
+                jsonPath("$.details[0].timeMillis") { value(chargedUserPoint.updateMillis) }
+            }
         }
     }
 
