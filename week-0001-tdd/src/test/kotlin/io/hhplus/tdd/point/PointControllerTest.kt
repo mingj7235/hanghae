@@ -59,8 +59,8 @@ class PointControllerTest(
 
             // Then
             result.andExpectAll {
-                status { isInternalServerError() }
-                jsonPath("$.message") { value("에러가 발생했습니다.") }
+                status { isBadRequest() }
+                jsonPath("$.message") { value("Not found user. [id] = [$notExistId]") }
             }
         }
 
@@ -129,8 +129,8 @@ class PointControllerTest(
 
             // Then
             result.andExpectAll {
-                status { isInternalServerError() }
-                jsonPath("$.message") { value("에러가 발생했습니다.") }
+                status { isBadRequest() }
+                jsonPath("$.message") { value("Not found user. [id] = [$notExistId]") }
             }
         }
 
@@ -233,8 +233,8 @@ class PointControllerTest(
 
             // Then
             result.andExpect {
-                status { isInternalServerError() }
-                jsonPath("$.message") { value("에러가 발생했습니다.") }
+                status { isBadRequest() }
+                jsonPath("$.message") { value("Not found user. [id] = [$notExistId]") }
             }
         }
 
@@ -251,7 +251,7 @@ class PointControllerTest(
                     amount = -1000,
                 ),
             ).willThrow(
-                PointException.InvalidChargePointAmountException("Invalid amount"),
+                PointException.InvalidChargePointAmountException("Invalid Charge Point : [$amount]"),
             )
 
             // When
@@ -263,8 +263,8 @@ class PointControllerTest(
 
             // Then
             result.andExpect {
-                status { isInternalServerError() }
-                jsonPath("$.message") { value("에러가 발생했습니다.") }
+                status { isBadRequest() }
+                jsonPath("$.message") { value("Invalid Charge Point : [$amount]") }
             }
         }
         //
@@ -304,6 +304,8 @@ class PointControllerTest(
                 jsonPath("$.updateMillis") { value(100L) }
             }
         }
+
+        // todo :
     }
 
     @Nested
@@ -334,8 +336,8 @@ class PointControllerTest(
 
             // Then
             result.andExpect {
-                status { isInternalServerError() }
-                jsonPath("$.message") { value("에러가 발생했습니다.") }
+                status { isBadRequest() }
+                jsonPath("$.message") { value("Not found user. [id] = [$notExistId]") }
             }
         }
 

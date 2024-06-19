@@ -36,6 +36,7 @@ class PointService(
         )
     }
 
+    @Synchronized
     fun charge(
         id: Long,
         amount: Long,
@@ -64,6 +65,7 @@ class PointService(
         return chargedUserPoint
     }
 
+    @Synchronized
     fun use(
         id: Long,
         amount: Long,

@@ -51,7 +51,7 @@ class PointController(
         @RequestBody amount: Long,
     ): PointResponse.Point {
         if (amount < 0) {
-            throw PointException.InvalidChargePointAmountException("")
+            throw PointException.InvalidChargePointAmountException("Invalid Charge Point : [$amount]")
         }
 
         return PointResponse.Point.of(
