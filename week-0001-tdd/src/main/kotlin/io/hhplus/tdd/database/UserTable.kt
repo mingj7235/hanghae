@@ -6,8 +6,15 @@ import org.springframework.stereotype.Component
 @Component
 class UserTable : UserRepository {
     private val table = HashMap<Long, User>()
+    private var cursor: Long = -1L
 
     override fun findBy(id: Long): User? {
         return table[id]
+    }
+
+    override fun save(id: Long): User {
+        val user = User(id)
+        table[id] = user
+        return user
     }
 }
