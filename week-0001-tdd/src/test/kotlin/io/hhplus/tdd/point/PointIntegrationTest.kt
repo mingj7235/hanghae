@@ -27,7 +27,6 @@ class PointIntegrationTest(
     @Autowired private val objectMapper: ObjectMapper,
     @Autowired private val mockMvc: MockMvc,
     @Autowired private val pointService: PointService,
-    @Autowired private val userManager: UserManager,
     @Autowired private val pointHistoryRepository: PointHistoryRepository,
     @Autowired private val userPointRepository: UserPointRepository,
     @Autowired private val userRepository: UserRepository,
@@ -348,6 +347,36 @@ class PointIntegrationTest(
             // then
             val userPoint = pointService.getPointBy(userId)
             assertEquals(currentPoint - (amount * numberOfThreads), userPoint.point)
+        }
+
+        @Test
+        fun `포인트를 동시에 충전과 사용을 같은 횟수로 진행했을 때 순차적으로 충전과 사용이 된다`() {
+            // given
+            val userId = 0L
+            val amount = 10L
+            val numberOfThreads = 1000
+            userRepository.save(userId)
+
+            val executor = Executors.newFixedThreadPool(numberOfThreads)
+            val latch = CountDownLatch(numberOfThreads)
+
+            // when
+            repeat(numberOfThreads) {
+                executor.submit {
+                    try {
+                        pointService.charge(userId, amount)
+                        pointService.use(userId, amount)
+                    } finally {
+                        latch.countDown()
+                    }
+                }
+            }
+            latch.await()
+            executor.shutdown()
+
+            // then
+            val userPoint = pointService.getPointBy(userId)
+            assertEquals(0L, userPoint.point)
         }
     }
 
