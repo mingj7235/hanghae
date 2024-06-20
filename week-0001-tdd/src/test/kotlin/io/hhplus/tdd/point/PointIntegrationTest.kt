@@ -1,5 +1,6 @@
 package io.hhplus.tdd.point
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.hhplus.tdd.database.PointHistoryRepository
 import io.hhplus.tdd.database.UserPointRepository
 import io.hhplus.tdd.database.UserRepository
@@ -14,29 +15,20 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.patch
 import java.lang.reflect.Field
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class PointIntegrationTest {
-    @Autowired
-    private lateinit var mockMvc: MockMvc
-
-    @Autowired
-    private lateinit var pointService: PointService
-
-    @Autowired
-    private lateinit var userManager: UserManager
-
-    @Autowired
-    private lateinit var pointHistoryRepository: PointHistoryRepository
-
-    @Autowired
-    private lateinit var userPointRepository: UserPointRepository
-
-    @Autowired
-    private lateinit var userRepository: UserRepository
-
+class PointIntegrationTest(
+    @Autowired private val objectMapper: ObjectMapper,
+    @Autowired private val mockMvc: MockMvc,
+    @Autowired private val pointService: PointService,
+    @Autowired private val userManager: UserManager,
+    @Autowired private val pointHistoryRepository: PointHistoryRepository,
+    @Autowired private val userPointRepository: UserPointRepository,
+    @Autowired private val userRepository: UserRepository,
+) {
     @AfterEach
     fun dataInit() {
         clearTable(userRepository)
@@ -164,7 +156,24 @@ class PointIntegrationTest {
         }
     }
 
+    @Nested
+    @DisplayName("[charge] 회원의 포인트 충전 API 통합 테스트")
+    inner class ChargeApiTest {
+        @Test
+        fun `존재하지 않은 회원의 포인트를 충전하려고 하면 예외를 리턴한다`() {
+            val amount = 1000L
+            mockMvc.patch("/point/$NON_EXISTED_USER_ID/charge") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(amount)
+            }
+                .andExpect {
+                    status { isBadRequest() }
+                    jsonPath("$.message") { value("Not found user. [id] = [$NON_EXISTED_USER_ID]") }
+                }
+        }
+    }
+
     companion object {
-        val NON_EXISTED_USER_ID = -1L
+        const val NON_EXISTED_USER_ID = -1L
     }
 }
