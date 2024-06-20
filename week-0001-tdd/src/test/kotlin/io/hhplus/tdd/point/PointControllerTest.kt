@@ -29,8 +29,7 @@ class PointControllerTest(
     @DisplayName("[point] 회원의 포인트 조회 API 테스트")
     inner class PointApiTest {
         @Test
-        @DisplayName("올바르지 않은 형태의 id가 들어올 경우 Bad Request 를 리턴한다.")
-        fun `getPointByInvalidTypePathVariable`() {
+        fun `올바르지 않은 형태의 id가 들어올 경우 Bad Request 를 리턴한다`() {
             // Given
             val wrongValue = "wrongValue"
 
@@ -44,8 +43,7 @@ class PointControllerTest(
         }
 
         @Test
-        @DisplayName("존재하지 않은 id 의 회원으로 포인트를 조회할 경우 예외를 리턴한다.")
-        fun `getPointByNotExistUserId`() {
+        fun `존재하지 않은 id 의 회원으로 포인트를 조회할 경우 예외를 리턴한다`() {
             // Given
             val notExistId = -1L
             given(
@@ -65,8 +63,7 @@ class PointControllerTest(
         }
 
         @Test
-        @DisplayName("정상적으로 존재하는 id 의 회원의 포인트를 조회할 경우 그 회원의 포인트를 리턴한다.")
-        fun `getUserPointApiTest`() {
+        fun `정상적으로 존재하는 id 의 회원의 포인트를 조회할 경우 그 회원의 포인트를 리턴한다`() {
             // Given
             val userId = 0L
             val userPoint = 100L
@@ -99,8 +96,7 @@ class PointControllerTest(
     @DisplayName("[history] 회원의 포인트 충전/이용 내역 조회 API 테스트")
     inner class HistoryApiTest {
         @Test
-        @DisplayName("올바르지 않은 형태의 id가 들어올 경우 Bad Request 를 리턴한다.")
-        fun `getHistoryByInvalidTypePathVariable`() {
+        fun `올바르지 않은 형태의 id가 들어올 경우 Bad Request 를 리턴한다`() {
             // Given
             val wrongValue = "wrongValue"
 
@@ -114,8 +110,7 @@ class PointControllerTest(
         }
 
         @Test
-        @DisplayName("존재하지 않은 id 의 회원으로 포인트를 조회할 경우 예외를 리턴한다.")
-        fun `getHistoryByNotExistUserId`() {
+        fun `존재하지 않은 id 의 회원으로 포인트를 조회할 경우 예외를 리턴한다`() {
             // Given
             val notExistId = -1L
             given(
@@ -135,8 +130,7 @@ class PointControllerTest(
         }
 
         @Test
-        @DisplayName("특정 유저의 포인트 충전 및 이용 내역을 조회한다.")
-        fun `getUserPointHistoryApiTest`() {
+        fun `특정 유저의 포인트 충전 및 이용 내역을 조회한다`() {
             // Given
             val userId = 0L
             val detailId = 0L
@@ -179,8 +173,7 @@ class PointControllerTest(
     @DisplayName("[charge] 회원의 포인트 충전 API 테스트")
     inner class ChargeApiTest {
         @Test
-        @DisplayName("올바르지 않은 형태의 id가 들어올 경우 Bad Request 를 리턴한다.")
-        fun `chargePointToInvalidTypePathVariable`() {
+        fun `올바르지 않은 형태의 id가 들어올 경우 Bad Request 를 리턴한다`() {
             // Given
             val wrongValue = "wrongValue"
 
@@ -194,8 +187,7 @@ class PointControllerTest(
         }
 
         @Test
-        @DisplayName("RequestBody 가 없는 경우 Bad Request 를 리턴한다.")
-        fun `notExistRequestBody`() {
+        fun `RequestBody 가 없는 경우 Bad Request 를 리턴한다`() {
             // Given
             val userId = 1
 
@@ -209,8 +201,7 @@ class PointControllerTest(
         }
 
         @Test
-        @DisplayName("존재하지 않은 id 의 회원으로 포인트를 조회할 경우 예외를 리턴한다.")
-        fun `chargePointByNotExistUserId`() {
+        fun `존재하지 않은 id 의 회원으로 포인트를 조회할 경우 예외를 리턴한다`() {
             // Given
             val notExistId = -1L
             val amount = 1000L
@@ -239,8 +230,7 @@ class PointControllerTest(
         }
 
         @Test
-        @DisplayName("음수 값은 충전이 불가능하다 ")
-        fun `chargeMinusPoint`() {
+        fun `음수 값은 충전이 불가능하다`() {
             // Given
             val userId = 0L
             val amount = -1000L
@@ -270,8 +260,7 @@ class PointControllerTest(
         //
 
         @Test
-        @DisplayName("특정 유저의 포인트를 충전한다.")
-        fun `patchChargePointApiTest`() {
+        fun `특정 유저의 포인트를 충전한다`() {
             // Given
             val userId = 0L
             val amount = 100L
@@ -304,16 +293,13 @@ class PointControllerTest(
                 jsonPath("$.updateMillis") { value(100L) }
             }
         }
-
-        // todo :
     }
 
     @Nested
     @DisplayName("[use] 회원의 포인트 사용 API 테스트")
     inner class UseApiTest {
         @Test
-        @DisplayName("존재하지 않은 id 의 회원으로 포인트를 조회할 경우 예외를 리턴한다.")
-        fun `usePointByNotExistUserId`() {
+        fun `존재하지 않은 id 의 회원으로 포인트를 조회할 경우 예외를 리턴한다`() {
             // Given
             val notExistId = -1L
             val amount = 1000L
@@ -342,8 +328,7 @@ class PointControllerTest(
         }
 
         @Test
-        @DisplayName("특정 유저의 포인트를 사용한다.")
-        fun `patchUsePointApiTest`() {
+        fun `특정 유저의 포인트를 사용한다`() {
             // Given
             val userId = 0L
             val amount = 1000L

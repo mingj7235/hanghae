@@ -5,7 +5,6 @@ import io.hhplus.tdd.point.UserManager
 import io.hhplus.tdd.user.data.User
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.InjectMocks
 import org.mockito.Mock
@@ -25,8 +24,7 @@ class UserManagerTest {
     }
 
     @Test
-    @DisplayName("[existUser] 존재하지 않은 userId 를 조회했을 때, false 를 리턴한다. ")
-    fun `notExistUserTest`() {
+    fun `존재하지 않은 userId 를 조회했을 때, false 를 리턴한다`() {
         // Given
         val notExistUserId = -1L
 
@@ -39,8 +37,7 @@ class UserManagerTest {
     }
 
     @Test
-    @DisplayName("[existUser] 존재하는 userId 를 조회했을 때, true 를 리턴한다. ")
-    fun `existUserTest`() {
+    fun `존재하는 userId 를 조회했을 때, true 를 리턴한다`() {
         // Given
         val existUserId = 0L
         val user = User(existUserId)

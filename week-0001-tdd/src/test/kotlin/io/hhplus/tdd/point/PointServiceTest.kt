@@ -42,8 +42,7 @@ class PointServiceTest {
     @DisplayName("[getPointBy] 회원 포인트 조회 서비스 테스트")
     inner class GetPointByTest {
         @Test
-        @DisplayName("[Failure Case 1] 조회하려는 id 가 없는 회원의 포인트를 조회할 경우 예외를 던진다.")
-        fun `getPointByNotExistUserId`() {
+        fun `조회하려는 id 가 없는 회원의 포인트를 조회할 경우 예외를 던진다`() {
             val notExistUserId = 100L
 
             `when`(userManager.existUser(notExistUserId)).thenReturn(false)
@@ -57,8 +56,7 @@ class PointServiceTest {
         }
 
         @Test
-        @DisplayName("[Success case 1] 존재하는 id의 회원의 포인트를 조회할 경우 성공한다.")
-        fun `getPointByUserIdSuccessTest`() {
+        fun `존재하는 id의 회원의 포인트를 조회할 경우 성공한다`() {
             val existUserId = 0L
             val userPoint = UserPoint(0L, 100L, 100L)
 
@@ -76,8 +74,7 @@ class PointServiceTest {
     @DisplayName("[getHistoryBy] 회원의 포인트 충전/이용 내역 조회 테스트")
     inner class GetHistoryByTest {
         @Test
-        @DisplayName("[Failure Case 1] 조회하려는 id 가 없는 회원의 포인트를 조회할 경우 예외를 던진다.")
-        fun `getHistoryByNotExistUserId`() {
+        fun `조회하려는 id 가 없는 회원의 포인트를 조회할 경우 예외를 던진다`() {
             val notExistUserId = 100L
 
             `when`(userManager.existUser(notExistUserId)).thenReturn(false)
@@ -91,8 +88,7 @@ class PointServiceTest {
         }
 
         @Test
-        @DisplayName("[Success case 1] 존재하는 id의 회원의 포인트 내역을 조회할 경우 성공한다.")
-        fun `getHistoryByUserIdSuccessTest`() {
+        fun `존재하는 id의 회원의 포인트 내역을 조회할 경우 성공한다`() {
             val existUserId = 0L
             val historyList =
                 listOf(
@@ -120,8 +116,7 @@ class PointServiceTest {
     @DisplayName("[charge] 회원의 포인트 저장 테스트")
     inner class ChargeTest {
         @Test
-        @DisplayName("[Failure Case 1] 포인트를 충전하려고 하는 회원의 id 가 없는 경우 실패한다.")
-        fun `chargeToNotExistUserId`() {
+        fun `포인트를 충전하려고 하는 회원의 id 가 없는 경우 실패한다`() {
             val notExistUserId = 100L
             val amount = 1000L
 
@@ -136,8 +131,7 @@ class PointServiceTest {
         }
 
         @Test
-        @DisplayName("[Success Case 1] 올바른 userId 와 amount 가 주어졌을 때 충전이 성공한다.")
-        fun `chargeSuccessTest`() {
+        fun `올바른 userId 와 amount 가 주어졌을 때 충전이 성공한다`() {
             val userId = 0L
             val amount = 1000L
             val userPoint = UserPoint(0L, 100L, 100L)
@@ -154,8 +148,7 @@ class PointServiceTest {
         }
 
         @Test
-        @DisplayName("[Success Case 2] 올바른 userId 와 amount 가 주어졌을 때, 충전 내역이 저장된다.")
-        fun `chargeSuccessHistorySaveTest`() {
+        fun `올바른 userId 와 amount 가 주어졌을 때, 충전 내역이 저장된다`() {
             val userId = 0L
             val amount = 1000L
             val userPoint = UserPoint(0L, 100L, 100L)
@@ -180,8 +173,7 @@ class PointServiceTest {
     @DisplayName("[use] 회원의 포인트 사용 테스트")
     inner class UseTest {
         @Test
-        @DisplayName("[Failure Case 1] 포인트를 사용하려고 하는 회원의 id 가 없는 경우 실패한다.")
-        fun `useToNotExistUserId`() {
+        fun `포인트를 사용하려고 하는 회원의 id 가 없는 경우 실패한다`() {
             val notExistUserId = 100L
             val amount = 1000L
 
@@ -196,8 +188,7 @@ class PointServiceTest {
         }
 
         @Test
-        @DisplayName("[Failure Case 2] 포인트를 사용하려고 하는 회원의 기존 포인트가 사용하려는 포인트보다 적을 경우 실패한다.")
-        fun `tryToOverPoint`() {
+        fun `포인트를 사용하려고 하는 회원의 기존 포인트가 사용하려는 포인트보다 적을 경우 실패한다`() {
             val userId = 0L
             val amount = 1000L
             val userPoint = UserPoint(0L, 500L, 500L)
@@ -214,8 +205,7 @@ class PointServiceTest {
         }
 
         @Test
-        @DisplayName("[Success Case 1] 포인트 사용에 성공한다.")
-        fun `usePointSuccssTest`() {
+        fun `포인트 사용에 성공한다`() {
             val userId = 0L
             val amount = 1000L
             val userPoint = UserPoint(userId, 3000L, 3000L)
@@ -237,8 +227,7 @@ class PointServiceTest {
         }
 
         @Test
-        @DisplayName("[Success Case 2] 포인트 사용에 성공하면, history 를 저장한다.")
-        fun `usePointSuccssHistorySaveTest`() {
+        fun `포인트 사용에 성공하면, history 를 저장한다`() {
             val userId = 0L
             val amount = 1000L
             val userPoint = UserPoint(userId, 3000L, 3000L)

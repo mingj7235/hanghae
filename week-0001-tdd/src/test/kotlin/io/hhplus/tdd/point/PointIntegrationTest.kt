@@ -39,7 +39,6 @@ class PointIntegrationTest {
     @DisplayName("[point] 회원의 포인트 조회 API 통합 테스트")
     inner class PointApiTest {
         @Test
-        @DisplayName("[Failure case 1] 존재하지 않은 회원의 포인트를 조회했을 때, 예외를 리턴한다.")
         fun `존재하지 않은 회원의 포인트를 조회하면 예외를 리턴한다`() {
             mockMvc.get("/point/$NON_EXISTED_USER_ID")
                 .andExpect {
@@ -49,8 +48,7 @@ class PointIntegrationTest {
         }
 
         @Test
-        @DisplayName("[Success case] 존재하는 id의 회원의 포인트를 조회할 경우 성공한다.")
-        fun `getPointByUserIdSuccessTest`() {
+        fun `존재하는 id의 회원의 포인트를 조회할 경우 성공한다`() {
             // Given
             val existUserId = 0L
             val point = 1000L
@@ -78,7 +76,6 @@ class PointIntegrationTest {
     @DisplayName("[history] 회원의 포인트 충전/이용 내역 조회 API 테스트")
     inner class HistoryApiTest {
         @Test
-        @DisplayName("[Failure case 1] 존재하지 않은 회원의 포인트를 조회했을 때, 예외를 리턴한다.")
         fun `존재하지 않은 회원의 포인트를 조회하면 예외를 리턴한다`() {
             mockMvc.get("/point/$NON_EXISTED_USER_ID/histories")
                 .andExpect {
@@ -88,7 +85,7 @@ class PointIntegrationTest {
         }
 
         @Test
-        fun `한 유저가 충전을 1회를 했을 때 충전 내역 조회가 성공한다`() {
+        fun `한 유저가 충전을 1회를 했었다면, 충전 내역 조회가 성공한다`() {
             // Given
             val existUserId = 0L
             val chargingPoint = 10000L
