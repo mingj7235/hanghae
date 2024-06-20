@@ -228,6 +228,23 @@ class PointIntegrationTest(
         }
     }
 
+    @Nested
+    @DisplayName("[use] 회원의 포인트 사용 API 통합 테스트")
+    inner class UseApiTest {
+        @Test
+        fun `존재하지 않은 회원의 포인트를 충전하려고 하면 예외를 리턴한다`() {
+            val amount = 1000L
+            mockMvc.patch("/point/$NON_EXISTED_USER_ID/use") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(amount)
+            }
+                .andExpect {
+                    status { isBadRequest() }
+                    jsonPath("$.message") { value("Not found user. [id] = [$NON_EXISTED_USER_ID]") }
+                }
+        }
+    }
+
     companion object {
         const val NON_EXISTED_USER_ID = -1L
     }
