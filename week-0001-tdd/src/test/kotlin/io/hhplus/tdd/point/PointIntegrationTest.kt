@@ -171,6 +171,23 @@ class PointIntegrationTest(
                     jsonPath("$.message") { value("Not found user. [id] = [$NON_EXISTED_USER_ID]") }
                 }
         }
+
+        @Test
+        fun `음수의 포인트를 충전하려고 하면 예외를 리턴한다`() {
+            val existUserId = 0L
+            val amount = -1000L
+
+            val user = userRepository.save(existUserId)
+
+            mockMvc.patch("/point/$existUserId/charge") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(amount)
+            }
+                .andExpect {
+                    status { isBadRequest() }
+                    jsonPath("$.message") { value("Invalid Charge Point : [$amount]") }
+                }
+        }
     }
 
     companion object {
