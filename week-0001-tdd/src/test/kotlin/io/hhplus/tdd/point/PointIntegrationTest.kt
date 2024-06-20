@@ -177,7 +177,7 @@ class PointIntegrationTest(
             val existUserId = 0L
             val amount = -1000L
 
-            val user = userRepository.save(existUserId)
+            userRepository.save(existUserId)
 
             mockMvc.patch("/point/$existUserId/charge") {
                 contentType = MediaType.APPLICATION_JSON
@@ -186,6 +186,24 @@ class PointIntegrationTest(
                 .andExpect {
                     status { isBadRequest() }
                     jsonPath("$.message") { value("Invalid Charge Point : [$amount]") }
+                }
+        }
+
+        @Test
+        fun `포인트 충전이 정상적으로 성공한다`() {
+            val existUserId = 0L
+            val amount = 10000L
+
+            val user = userRepository.save(existUserId)
+
+            mockMvc.patch("/point/$existUserId/charge") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(amount)
+            }
+                .andExpect {
+                    status { isOk() }
+                    jsonPath("$.id") { value(user.id) }
+                    jsonPath("$.point") { value(amount) }
                 }
         }
     }
