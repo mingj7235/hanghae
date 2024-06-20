@@ -206,6 +206,26 @@ class PointIntegrationTest(
                     jsonPath("$.point") { value(amount) }
                 }
         }
+
+        @Test
+        fun `기존 포인트가 존재하던 유저의 포인트를 충전하면 기존 금액에 정상적으로 더해진다`() {
+            val existUserId = 0L
+            val currentPoint = 10000L
+            val amount = 5000L
+
+            val user = userRepository.save(existUserId)
+            userPointRepository.insertOrUpdate(id = 0L, amount = currentPoint)
+
+            mockMvc.patch("/point/$existUserId/charge") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(amount)
+            }
+                .andExpect {
+                    status { isOk() }
+                    jsonPath("$.id") { value(user.id) }
+                    jsonPath("$.point") { value(currentPoint + amount) }
+                }
+        }
     }
 
     companion object {
