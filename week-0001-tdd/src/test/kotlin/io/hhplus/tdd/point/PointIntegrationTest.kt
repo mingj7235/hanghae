@@ -6,6 +6,7 @@ import io.hhplus.tdd.database.UserPointRepository
 import io.hhplus.tdd.database.UserRepository
 import io.hhplus.tdd.point.type.TransactionType
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -17,6 +18,8 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.patch
 import java.lang.reflect.Field
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -281,6 +284,39 @@ class PointIntegrationTest(
                     jsonPath("$.id") { value(user.id) }
                     jsonPath("$.point") { value(currentPoint - amount) }
                 }
+        }
+    }
+
+    @Nested
+    @DisplayName("[동시성] 회원의 포인트 충전 및 사용 동시성 테스트")
+    inner class PointConcurrencyTest {
+        @Test
+        fun `포인트를 동시에 여러번 충전을 하면 순차적으로 충전이 된다`() {
+            // given
+            val userId = 0L
+            val amount = 10L
+            val numberOfThreads = 100
+            userRepository.save(userId)
+
+            val executor = Executors.newFixedThreadPool(numberOfThreads)
+            val latch = CountDownLatch(numberOfThreads)
+
+            // when
+            for (i in 0 until numberOfThreads) {
+                executor.submit {
+                    try {
+                        pointService.charge(userId, amount)
+                    } finally {
+                        latch.countDown()
+                    }
+                }
+            }
+            latch.await()
+            executor.shutdown()
+
+            // then
+            val userPoint = pointService.getPointBy(userId)
+            assertEquals(amount * numberOfThreads, userPoint.point)
         }
     }
 
