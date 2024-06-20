@@ -262,6 +262,26 @@ class PointIntegrationTest(
                     jsonPath("$.message") { value("Insufficient Point. Current Point : $currentPoint") }
                 }
         }
+
+        @Test
+        fun `현재 유저가 사용하려는 포인트보다 더 많은 포인트가 있다면 정상적으로 포인트가 사용된다`() {
+            val existUserId = 0L
+            val currentPoint = 5000L
+            val amount = 1000L
+
+            val user = userRepository.save(existUserId)
+            userPointRepository.insertOrUpdate(id = user.id, amount = currentPoint)
+
+            mockMvc.patch("/point/$existUserId/use") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(amount)
+            }
+                .andExpect {
+                    status { isOk() }
+                    jsonPath("$.id") { value(user.id) }
+                    jsonPath("$.point") { value(currentPoint - amount) }
+                }
+        }
     }
 
     companion object {
