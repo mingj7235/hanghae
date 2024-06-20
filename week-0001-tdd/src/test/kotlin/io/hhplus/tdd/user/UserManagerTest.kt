@@ -25,28 +25,22 @@ class UserManagerTest {
 
     @Test
     fun `존재하지 않은 userId 를 조회했을 때, false 를 리턴한다`() {
-        // Given
         val notExistUserId = -1L
 
-        // When
         `when`(userRepository.findBy(notExistUserId)).thenReturn(null)
         val existUser = userManager.existUser(notExistUserId)
 
-        // Then
         assertThat(existUser).isEqualTo(false)
     }
 
     @Test
     fun `존재하는 userId 를 조회했을 때, true 를 리턴한다`() {
-        // Given
         val existUserId = 0L
         val user = User(existUserId)
 
-        // When
         `when`(userRepository.findBy(existUserId)).thenReturn(user)
         val existUser = userManager.existUser(existUserId)
 
-        // Then
         assertThat(existUser).isEqualTo(true)
     }
 }

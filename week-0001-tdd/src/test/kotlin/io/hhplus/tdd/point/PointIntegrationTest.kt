@@ -31,6 +31,11 @@ class PointIntegrationTest(
     @Autowired private val userPointRepository: UserPointRepository,
     @Autowired private val userRepository: UserRepository,
 ) {
+    /**
+     * 각 테스트가 독립적으로 실행 되기 위해 각 테스트가 실행 된 후에 테이블의 데이터를 초기화 한다.
+     * - Table 클래스를 수정할 수 없으므로 clear() 등의 메서드를 만들 수 없다.
+     * - 테스트 클래스 내부에서 리플렉션을 사용하여 해당 테이블의 데이터를 초기화 한다.
+     */
     @AfterEach
     fun dataInit() {
         clearTable(userRepository)
@@ -68,20 +73,17 @@ class PointIntegrationTest(
 
         @Test
         fun `존재하는 id의 유저의 포인트를 조회할 경우 성공한다`() {
-            // Given
             val existUserId = 0L
             val point = 1000L
 
             val user = userRepository.save(existUserId)
             val userPoint = userPointRepository.insertOrUpdate(user.id, point)
 
-            // When
             val result =
                 mockMvc.get("/point/$existUserId") {
                     contentType = MediaType.APPLICATION_JSON
                 }
 
-            // Then
             result.andExpect {
                 status { isOk() }
                 jsonPath("$.id") { value(user.id) }
@@ -105,7 +107,6 @@ class PointIntegrationTest(
 
         @Test
         fun `한 유저가 충전을 1회를 했었다면, 충전 내역 조회가 성공한다`() {
-            // Given
             val existUserId = 0L
             val chargingPoint = 10000L
 
@@ -129,7 +130,6 @@ class PointIntegrationTest(
 
         @Test
         fun `한 유저가 충전을 1회, 사용 1회를 했었다면, 충전 1회 사용 1회 내역 조회가 성공한다`() {
-            // Given
             val existUserId = 0L
             val chargingPoint = 10000L
             val usingPoint = 5000L
@@ -291,7 +291,6 @@ class PointIntegrationTest(
     inner class PointConcurrencyTest {
         @Test
         fun `포인트를 동시에 여러번 충전을 하면 순차적으로 충전이 된다`() {
-            // given
             val userId = 0L
             val amount = 10L
             val numberOfThreads = 100
@@ -300,7 +299,6 @@ class PointIntegrationTest(
             val executor = Executors.newFixedThreadPool(numberOfThreads)
             val latch = CountDownLatch(numberOfThreads)
 
-            // when
             repeat(numberOfThreads) {
                 executor.submit {
                     try {
@@ -313,14 +311,12 @@ class PointIntegrationTest(
             latch.await()
             executor.shutdown()
 
-            // then
             val userPoint = pointService.getPointBy(userId)
             assertEquals(amount * numberOfThreads, userPoint.point)
         }
 
         @Test
         fun `포인트를 동시에 여러번 사용을 하면 순차적으로 사용이 된다`() {
-            // given
             val userId = 0L
             val currentPoint = 10000000L
             val amount = 10L
@@ -331,7 +327,6 @@ class PointIntegrationTest(
             val executor = Executors.newFixedThreadPool(numberOfThreads)
             val latch = CountDownLatch(numberOfThreads)
 
-            // when
             repeat(numberOfThreads) {
                 executor.submit {
                     try {
@@ -344,14 +339,12 @@ class PointIntegrationTest(
             latch.await()
             executor.shutdown()
 
-            // then
             val userPoint = pointService.getPointBy(userId)
             assertEquals(currentPoint - (amount * numberOfThreads), userPoint.point)
         }
 
         @Test
         fun `포인트를 동시에 충전과 사용을 같은 횟수로 진행했을 때 순차적으로 충전과 사용이 된다`() {
-            // given
             val userId = 0L
             val amount = 10L
             val numberOfThreads = 1000
@@ -360,7 +353,6 @@ class PointIntegrationTest(
             val executor = Executors.newFixedThreadPool(numberOfThreads)
             val latch = CountDownLatch(numberOfThreads)
 
-            // when
             repeat(numberOfThreads) {
                 executor.submit {
                     try {
@@ -374,7 +366,6 @@ class PointIntegrationTest(
             latch.await()
             executor.shutdown()
 
-            // then
             val userPoint = pointService.getPointBy(userId)
             assertEquals(0L, userPoint.point)
         }

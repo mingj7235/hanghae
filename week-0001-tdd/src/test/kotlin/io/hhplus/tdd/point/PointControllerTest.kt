@@ -346,11 +346,14 @@ class PointControllerTest(
                 ),
             ).willReturn(userPoint)
 
+            // When
             val result =
                 mockMvc.patch("/point/$userId/use") {
                     contentType = MediaType.APPLICATION_JSON
                     content = objectMapper.writeValueAsString(amount)
                 }
+
+            // Then
             result.andExpect {
                 status { isOk() }
                 jsonPath("$.id") { value(0L) }

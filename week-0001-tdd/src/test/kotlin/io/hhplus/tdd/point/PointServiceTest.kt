@@ -43,14 +43,14 @@ class PointServiceTest {
     inner class GetPointByTest {
         @Test
         fun `조회하려는 id 가 없는 유저의 포인트를 조회할 경우 예외를 던진다`() {
-            val notExistUserId = 100L
-
+            val notExistUserId = -1L
             `when`(userManager.existUser(notExistUserId)).thenReturn(false)
 
             val exception =
                 assertThrows<UserException.UserNotFound> {
                     pointService.getPointBy(userId = notExistUserId)
                 }
+
             assertThat(exception)
                 .message().contains("Not found user. [id] = [$notExistUserId]")
         }
@@ -59,11 +59,11 @@ class PointServiceTest {
         fun `존재하는 id의 유저의 포인트를 조회할 경우 성공한다`() {
             val existUserId = 0L
             val userPoint = UserPoint(0L, 100L, 100L)
-
             `when`(userManager.existUser(existUserId)).thenReturn(true)
             `when`(userPointRepository.selectById(existUserId)).thenReturn(userPoint)
 
             val point = pointService.getPointBy(existUserId)
+
             assertThat(point.id).isEqualTo(0L)
             assertThat(point.point).isEqualTo(100L)
             assertThat(point.updateMillis).isEqualTo(100L)
@@ -75,14 +75,14 @@ class PointServiceTest {
     inner class GetHistoryByTest {
         @Test
         fun `조회하려는 id 가 없는 유저의 포인트를 조회할 경우 예외를 던진다`() {
-            val notExistUserId = 100L
-
+            val notExistUserId = -1L
             `when`(userManager.existUser(notExistUserId)).thenReturn(false)
 
             val exception =
                 assertThrows<UserException.UserNotFound> {
                     pointService.getHistoryBy(userId = notExistUserId)
                 }
+
             assertThat(exception)
                 .message().contains("Not found user. [id] = [$notExistUserId]")
         }
@@ -100,6 +100,7 @@ class PointServiceTest {
             `when`(pointHistoryRepository.selectAllByUserId(existUserId)).thenReturn(historyList)
 
             val history = pointService.getHistoryBy(existUserId)
+
             assertThat(history.userId).isEqualTo(0L)
             assertThat(history.details[0].detailId).isEqualTo(0L)
             assertThat(history.details[0].type).isEqualTo(TransactionType.CHARGE)
@@ -117,30 +118,30 @@ class PointServiceTest {
     inner class ChargeTest {
         @Test
         fun `포인트를 충전하려고 하는 유저의 id 가 없는 경우 실패한다`() {
-            val notExistUserId = 100L
+            val notExistUserId = -1L
             val amount = 1000L
-
             `when`(userManager.existUser(notExistUserId)).thenReturn(false)
 
             val exception =
                 assertThrows<UserException.UserNotFound> {
                     pointService.charge(id = notExistUserId, amount = amount)
                 }
+
             assertThat(exception)
                 .message().contains("Not found user. [id] = [$notExistUserId]")
         }
 
         @Test
         fun `충전하려는 포인트가 음수인 경우 실패한다`() {
-            val existUserId = 100L
+            val existUserId = 0L
             val amount = -1000L
-
             `when`(userManager.existUser(existUserId)).thenReturn(true)
 
             val exception =
                 assertThrows<PointException.InvalidChargePointAmountException> {
                     pointService.charge(id = existUserId, amount = amount)
                 }
+
             assertThat(exception)
                 .message().isEqualTo("Invalid Charge Point : [$amount]")
         }
@@ -175,6 +176,10 @@ class PointServiceTest {
 
             val chargedUserPoint = pointService.charge(id = userId, amount = amount)
 
+            /**
+             * pointHistoryRepository.insert() 가 호출이 된다면, history 저장이 보장된다고 전제한다.
+             * 즉, 해당 메서드가 호출이 된다면 history 는 저장하는 것으로 간주한다.
+             */
             verify(pointHistoryRepository, times(1)).insert(
                 id = chargedUserPoint.id,
                 amount = amount,
@@ -189,7 +194,7 @@ class PointServiceTest {
     inner class UseTest {
         @Test
         fun `포인트를 사용하려고 하는 유저의 id 가 없는 경우 실패한다`() {
-            val notExistUserId = 100L
+            val notExistUserId = -1L
             val amount = 1000L
 
             `when`(userManager.existUser(notExistUserId)).thenReturn(false)
@@ -215,6 +220,7 @@ class PointServiceTest {
                 assertThrows<PointException.InsufficientPointsException> {
                     pointService.use(id = userId, amount = amount)
                 }
+
             assertThat(exception)
                 .message().contains("Insufficient Point. Current Point : ${userPoint.point}")
         }
@@ -223,11 +229,11 @@ class PointServiceTest {
         fun `포인트 사용에 성공한다`() {
             val userId = 0L
             val amount = 1000L
-            val userPoint = UserPoint(userId, 3000L, 3000L)
+            val currentUserPoint = UserPoint(userId, 3000L, 3000L)
             val usedPoint = UserPoint(userId, 2000L, 20000L)
 
             `when`(userManager.existUser(userId)).thenReturn(true)
-            `when`(userPointRepository.selectById(userId)).thenReturn(userPoint)
+            `when`(userPointRepository.selectById(userId)).thenReturn(currentUserPoint)
             `when`(
                 userPointRepository.insertOrUpdate(
                     id = userId,
@@ -259,6 +265,10 @@ class PointServiceTest {
 
             val usedUserPoint = pointService.use(id = userId, amount = amount)
 
+            /**
+             * pointHistoryRepository.insert() 가 호출이 된다면, history 저장이 보장된다고 전제한다.
+             * 즉, 해당 메서드가 호출이 된다면 history 는 저장하는 것으로 간주한다.
+             */
             verify(pointHistoryRepository, times(1)).insert(
                 id = usedUserPoint.id,
                 amount = amount,
