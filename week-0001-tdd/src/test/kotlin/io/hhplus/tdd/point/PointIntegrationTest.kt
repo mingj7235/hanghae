@@ -302,7 +302,7 @@ class PointIntegrationTest(
             val latch = CountDownLatch(numberOfThreads)
 
             // when
-            for (i in 0 until numberOfThreads) {
+            repeat(numberOfThreads) {
                 executor.submit {
                     try {
                         pointService.charge(userId, amount)
@@ -317,6 +317,37 @@ class PointIntegrationTest(
             // then
             val userPoint = pointService.getPointBy(userId)
             assertEquals(amount * numberOfThreads, userPoint.point)
+        }
+
+        @Test
+        fun `포인트를 동시에 여러번 사용을 하면 순차적으로 사용이 된다`() {
+            // given
+            val userId = 0L
+            val currentPoint = 10000000L
+            val amount = 10L
+            val numberOfThreads = 1000
+            userRepository.save(userId)
+            userPointRepository.insertOrUpdate(userId, currentPoint)
+
+            val executor = Executors.newFixedThreadPool(numberOfThreads)
+            val latch = CountDownLatch(numberOfThreads)
+
+            // when
+            repeat(numberOfThreads) {
+                executor.submit {
+                    try {
+                        pointService.use(userId, amount)
+                    } finally {
+                        latch.countDown()
+                    }
+                }
+            }
+            latch.await()
+            executor.shutdown()
+
+            // then
+            val userPoint = pointService.getPointBy(userId)
+            assertEquals(currentPoint - (amount * numberOfThreads), userPoint.point)
         }
     }
 
