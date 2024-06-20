@@ -27,7 +27,7 @@ class ApiControllerAdvice : ResponseEntityExceptionHandler() {
     @ExceptionHandler(
         value = [
             UserException.UserNotFound::class,
-            PointException.InvalidChargePointAmountException::class,
+            PointException.InvalidAmountException::class,
             PointException.InsufficientPointsException::class,
         ],
     )

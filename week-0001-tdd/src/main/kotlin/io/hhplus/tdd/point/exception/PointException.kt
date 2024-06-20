@@ -1,7 +1,7 @@
 package io.hhplus.tdd.point.exception
 
 object PointException {
-    class InvalidChargePointAmountException(
+    class InvalidAmountException(
         errorMessage: String,
     ) : RuntimeException(errorMessage)
 

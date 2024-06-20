@@ -241,7 +241,7 @@ class PointControllerTest(
                     amount = -1000,
                 ),
             ).willThrow(
-                PointException.InvalidChargePointAmountException("Invalid Charge Point : [$amount]"),
+                PointException.InvalidAmountException("Invalid Charge Point : [$amount]"),
             )
 
             // When

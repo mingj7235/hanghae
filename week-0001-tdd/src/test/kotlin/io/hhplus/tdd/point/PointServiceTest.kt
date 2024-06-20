@@ -138,7 +138,7 @@ class PointServiceTest {
             `when`(userManager.existUser(existUserId)).thenReturn(true)
 
             val exception =
-                assertThrows<PointException.InvalidChargePointAmountException> {
+                assertThrows<PointException.InvalidAmountException> {
                     pointService.charge(id = existUserId, amount = amount)
                 }
 
@@ -205,6 +205,21 @@ class PointServiceTest {
                 }
             assertThat(exception)
                 .message().contains("Not found user. [id] = [$notExistUserId]")
+        }
+
+        @Test
+        fun `사용하려는 포인트가 음수인 경우 실패한다`() {
+            val existUserId = 0L
+            val amount = -1000L
+            `when`(userManager.existUser(existUserId)).thenReturn(true)
+
+            val exception =
+                assertThrows<PointException.InvalidAmountException> {
+                    pointService.use(id = existUserId, amount = amount)
+                }
+
+            assertThat(exception)
+                .message().isEqualTo("Invalid Use Point : [$amount]")
         }
 
         @Test
