@@ -26,7 +26,7 @@ class PointControllerTest(
     lateinit var pointService: PointService
 
     @Nested
-    @DisplayName("[point] 회원의 포인트 조회 API 테스트")
+    @DisplayName("[point] 유저의 포인트 조회 API 테스트")
     inner class PointApiTest {
         @Test
         fun `올바르지 않은 형태의 id가 들어올 경우 Bad Request 를 리턴한다`() {
@@ -43,7 +43,7 @@ class PointControllerTest(
         }
 
         @Test
-        fun `존재하지 않은 id 의 회원으로 포인트를 조회할 경우 예외를 리턴한다`() {
+        fun `존재하지 않은 id 의 유저로 포인트를 조회할 경우 예외를 리턴한다`() {
             // Given
             val notExistId = -1L
             given(
@@ -63,7 +63,7 @@ class PointControllerTest(
         }
 
         @Test
-        fun `정상적으로 존재하는 id 의 회원의 포인트를 조회할 경우 그 회원의 포인트를 리턴한다`() {
+        fun `정상적으로 존재하는 id 의 유저의 포인트를 조회할 경우 그 유저의 포인트를 리턴한다`() {
             // Given
             val userId = 0L
             val userPoint = 100L
@@ -93,7 +93,7 @@ class PointControllerTest(
     }
 
     @Nested
-    @DisplayName("[history] 회원의 포인트 충전/이용 내역 조회 API 테스트")
+    @DisplayName("[history] 유저의 포인트 충전/이용 내역 조회 API 테스트")
     inner class HistoryApiTest {
         @Test
         fun `올바르지 않은 형태의 id가 들어올 경우 Bad Request 를 리턴한다`() {
@@ -110,7 +110,7 @@ class PointControllerTest(
         }
 
         @Test
-        fun `존재하지 않은 id 의 회원으로 포인트를 조회할 경우 예외를 리턴한다`() {
+        fun `존재하지 않은 id 의 유저로 포인트를 조회할 경우 예외를 리턴한다`() {
             // Given
             val notExistId = -1L
             given(
@@ -170,7 +170,7 @@ class PointControllerTest(
     }
 
     @Nested
-    @DisplayName("[charge] 회원의 포인트 충전 API 테스트")
+    @DisplayName("[charge] 유저의 포인트 충전 API 테스트")
     inner class ChargeApiTest {
         @Test
         fun `올바르지 않은 형태의 id가 들어올 경우 Bad Request 를 리턴한다`() {
@@ -201,7 +201,7 @@ class PointControllerTest(
         }
 
         @Test
-        fun `존재하지 않은 id 의 회원으로 포인트를 조회할 경우 예외를 리턴한다`() {
+        fun `존재하지 않은 id 의 유저로 포인트를 조회할 경우 예외를 리턴한다`() {
             // Given
             val notExistId = -1L
             val amount = 1000L
@@ -296,10 +296,10 @@ class PointControllerTest(
     }
 
     @Nested
-    @DisplayName("[use] 회원의 포인트 사용 API 테스트")
+    @DisplayName("[use] 유저의 포인트 사용 API 테스트")
     inner class UseApiTest {
         @Test
-        fun `존재하지 않은 id 의 회원으로 포인트를 조회할 경우 예외를 리턴한다`() {
+        fun `존재하지 않은 id 의 유저로 포인트를 조회할 경우 예외를 리턴한다`() {
             // Given
             val notExistId = -1L
             val amount = 1000L

@@ -39,10 +39,10 @@ class PointServiceTest {
     }
 
     @Nested
-    @DisplayName("[getPointBy] 회원 포인트 조회 서비스 테스트")
+    @DisplayName("[getPointBy] 유저 포인트 조회 서비스 테스트")
     inner class GetPointByTest {
         @Test
-        fun `조회하려는 id 가 없는 회원의 포인트를 조회할 경우 예외를 던진다`() {
+        fun `조회하려는 id 가 없는 유저의 포인트를 조회할 경우 예외를 던진다`() {
             val notExistUserId = 100L
 
             `when`(userManager.existUser(notExistUserId)).thenReturn(false)
@@ -56,7 +56,7 @@ class PointServiceTest {
         }
 
         @Test
-        fun `존재하는 id의 회원의 포인트를 조회할 경우 성공한다`() {
+        fun `존재하는 id의 유저의 포인트를 조회할 경우 성공한다`() {
             val existUserId = 0L
             val userPoint = UserPoint(0L, 100L, 100L)
 
@@ -71,10 +71,10 @@ class PointServiceTest {
     }
 
     @Nested
-    @DisplayName("[getHistoryBy] 회원의 포인트 충전/이용 내역 조회 테스트")
+    @DisplayName("[getHistoryBy] 유저의 포인트 충전/이용 내역 조회 테스트")
     inner class GetHistoryByTest {
         @Test
-        fun `조회하려는 id 가 없는 회원의 포인트를 조회할 경우 예외를 던진다`() {
+        fun `조회하려는 id 가 없는 유저의 포인트를 조회할 경우 예외를 던진다`() {
             val notExistUserId = 100L
 
             `when`(userManager.existUser(notExistUserId)).thenReturn(false)
@@ -88,7 +88,7 @@ class PointServiceTest {
         }
 
         @Test
-        fun `존재하는 id의 회원의 포인트 내역을 조회할 경우 성공한다`() {
+        fun `존재하는 id의 유저의 포인트 내역을 조회할 경우 성공한다`() {
             val existUserId = 0L
             val historyList =
                 listOf(
@@ -113,10 +113,10 @@ class PointServiceTest {
     }
 
     @Nested
-    @DisplayName("[charge] 회원의 포인트 저장 테스트")
+    @DisplayName("[charge] 유저의 포인트 저장 테스트")
     inner class ChargeTest {
         @Test
-        fun `포인트를 충전하려고 하는 회원의 id 가 없는 경우 실패한다`() {
+        fun `포인트를 충전하려고 하는 유저의 id 가 없는 경우 실패한다`() {
             val notExistUserId = 100L
             val amount = 1000L
 
@@ -185,10 +185,10 @@ class PointServiceTest {
     }
 
     @Nested
-    @DisplayName("[use] 회원의 포인트 사용 테스트")
+    @DisplayName("[use] 유저의 포인트 사용 테스트")
     inner class UseTest {
         @Test
-        fun `포인트를 사용하려고 하는 회원의 id 가 없는 경우 실패한다`() {
+        fun `포인트를 사용하려고 하는 유저의 id 가 없는 경우 실패한다`() {
             val notExistUserId = 100L
             val amount = 1000L
 
@@ -203,7 +203,7 @@ class PointServiceTest {
         }
 
         @Test
-        fun `포인트를 사용하려고 하는 회원의 기존 포인트가 사용하려는 포인트보다 적을 경우 실패한다`() {
+        fun `포인트를 사용하려고 하는 유저의 기존 포인트가 사용하려는 포인트보다 적을 경우 실패한다`() {
             val userId = 0L
             val amount = 1000L
             val userPoint = UserPoint(0L, 500L, 500L)

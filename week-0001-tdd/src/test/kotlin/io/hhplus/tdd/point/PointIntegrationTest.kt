@@ -53,10 +53,10 @@ class PointIntegrationTest(
     }
 
     @Nested
-    @DisplayName("[point] 회원의 포인트 조회 API 통합 테스트")
+    @DisplayName("[point] 유저의 포인트 조회 API 통합 테스트")
     inner class PointApiTest {
         @Test
-        fun `존재하지 않은 회원의 포인트를 조회하면 예외를 리턴한다`() {
+        fun `존재하지 않은 유저의 포인트를 조회하면 예외를 리턴한다`() {
             mockMvc.get("/point/$NON_EXISTED_USER_ID")
                 .andExpect {
                     status { isBadRequest() }
@@ -65,7 +65,7 @@ class PointIntegrationTest(
         }
 
         @Test
-        fun `존재하는 id의 회원의 포인트를 조회할 경우 성공한다`() {
+        fun `존재하는 id의 유저의 포인트를 조회할 경우 성공한다`() {
             // Given
             val existUserId = 0L
             val point = 1000L
@@ -90,10 +90,10 @@ class PointIntegrationTest(
     }
 
     @Nested
-    @DisplayName("[history] 회원의 포인트 충전/이용 내역 조회 API 통합 테스트")
+    @DisplayName("[history] 유저의 포인트 충전/이용 내역 조회 API 통합 테스트")
     inner class HistoryApiTest {
         @Test
-        fun `존재하지 않은 회원의 포인트를 조회하면 예외를 리턴한다`() {
+        fun `존재하지 않은 유저의 포인트를 조회하면 예외를 리턴한다`() {
             mockMvc.get("/point/$NON_EXISTED_USER_ID/histories")
                 .andExpect {
                     status { isBadRequest() }
@@ -157,10 +157,10 @@ class PointIntegrationTest(
     }
 
     @Nested
-    @DisplayName("[charge] 회원의 포인트 충전 API 통합 테스트")
+    @DisplayName("[charge] 유저의 포인트 충전 API 통합 테스트")
     inner class ChargeApiTest {
         @Test
-        fun `존재하지 않은 회원의 포인트를 충전하려고 하면 예외를 리턴한다`() {
+        fun `존재하지 않은 유저의 포인트를 충전하려고 하면 예외를 리턴한다`() {
             val amount = 1000L
             mockMvc.patch("/point/$NON_EXISTED_USER_ID/charge") {
                 contentType = MediaType.APPLICATION_JSON
@@ -229,10 +229,10 @@ class PointIntegrationTest(
     }
 
     @Nested
-    @DisplayName("[use] 회원의 포인트 사용 API 통합 테스트")
+    @DisplayName("[use] 유저의 포인트 사용 API 통합 테스트")
     inner class UseApiTest {
         @Test
-        fun `존재하지 않은 회원의 포인트를 충전하려고 하면 예외를 리턴한다`() {
+        fun `존재하지 않은 유저의 포인트를 충전하려고 하면 예외를 리턴한다`() {
             val amount = 1000L
             mockMvc.patch("/point/$NON_EXISTED_USER_ID/use") {
                 contentType = MediaType.APPLICATION_JSON
