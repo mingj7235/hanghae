@@ -7,9 +7,11 @@ import io.hhplus.tdd.database.UserRepository
 import io.hhplus.tdd.point.type.TransactionType
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.fail
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -348,6 +350,7 @@ class PointIntegrationTest(
             val userId = 0L
             val amount = 10L
             val numberOfThreads = 1000
+            var hasError = false
             userRepository.save(userId)
 
             val executor = Executors.newFixedThreadPool(numberOfThreads)
@@ -358,6 +361,8 @@ class PointIntegrationTest(
                     try {
                         pointService.charge(userId, amount)
                         pointService.use(userId, amount)
+                    } catch (e: Exception) {
+                        hasError = true
                     } finally {
                         latch.countDown()
                     }
@@ -365,6 +370,10 @@ class PointIntegrationTest(
             }
             latch.await()
             executor.shutdown()
+
+            if (hasError) {
+                fail<Nothing>("Exception occurred during point transactions")
+            }
 
             val userPoint = pointService.getPointBy(userId)
             assertEquals(0L, userPoint.point)
