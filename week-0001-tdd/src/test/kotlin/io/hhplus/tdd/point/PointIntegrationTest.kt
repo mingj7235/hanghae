@@ -4,6 +4,7 @@ import io.hhplus.tdd.database.PointHistoryRepository
 import io.hhplus.tdd.database.UserPointRepository
 import io.hhplus.tdd.database.UserRepository
 import io.hhplus.tdd.point.type.TransactionType
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -13,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
+import java.lang.reflect.Field
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -34,6 +36,29 @@ class PointIntegrationTest {
 
     @Autowired
     private lateinit var userRepository: UserRepository
+
+    @AfterEach
+    fun dataInit() {
+        clearTable(userRepository)
+        clearTable(pointHistoryRepository)
+        clearTable(userPointRepository)
+        resetCursor(pointHistoryRepository)
+    }
+
+    private fun clearTable(repository: Any) {
+        val tableField: Field = repository::class.java.getDeclaredField("table")
+        tableField.isAccessible = true
+        when (val table = tableField.get(repository)) {
+            is MutableMap<*, *> -> table.clear()
+            is MutableList<*> -> table.clear()
+        }
+    }
+
+    private fun resetCursor(repository: Any) {
+        val cursorField: Field = repository::class.java.getDeclaredField("cursor")
+        cursorField.isAccessible = true
+        cursorField.set(repository, 1L)
+    }
 
     @Nested
     @DisplayName("[point] 회원의 포인트 조회 API 통합 테스트")
@@ -73,7 +98,7 @@ class PointIntegrationTest {
     }
 
     @Nested
-    @DisplayName("[history] 회원의 포인트 충전/이용 내역 조회 API 테스트")
+    @DisplayName("[history] 회원의 포인트 충전/이용 내역 조회 API 통합 테스트")
     inner class HistoryApiTest {
         @Test
         fun `존재하지 않은 회원의 포인트를 조회하면 예외를 리턴한다`() {
