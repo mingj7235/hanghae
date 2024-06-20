@@ -45,6 +45,10 @@ class PointService(
             throw UserException.UserNotFound("Not found user. [id] = [$id]")
         }
 
+        if (amount < 0) {
+            throw PointException.InvalidChargePointAmountException("Invalid Charge Point : [$amount]")
+        }
+
         val currentUserPoint = userPointRepository.selectById(id)
 
         val chargedUserPoint =

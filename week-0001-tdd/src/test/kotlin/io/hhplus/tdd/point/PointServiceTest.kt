@@ -131,6 +131,21 @@ class PointServiceTest {
         }
 
         @Test
+        fun `충전하려는 포인트가 음수인 경우 실패한다`() {
+            val existUserId = 100L
+            val amount = -1000L
+
+            `when`(userManager.existUser(existUserId)).thenReturn(true)
+
+            val exception =
+                assertThrows<PointException.InvalidChargePointAmountException> {
+                    pointService.charge(id = existUserId, amount = amount)
+                }
+            assertThat(exception)
+                .message().isEqualTo("Invalid Charge Point : [$amount]")
+        }
+
+        @Test
         fun `올바른 userId 와 amount 가 주어졌을 때 충전이 성공한다`() {
             val userId = 0L
             val amount = 1000L

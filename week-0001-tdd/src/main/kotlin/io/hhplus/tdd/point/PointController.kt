@@ -1,6 +1,5 @@
 package io.hhplus.tdd.point
 
-import io.hhplus.tdd.point.exception.PointException
 import io.hhplus.tdd.point.response.PointResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -50,10 +49,6 @@ class PointController(
         @PathVariable id: Long,
         @RequestBody amount: Long,
     ): PointResponse.Point {
-        if (amount < 0) {
-            throw PointException.InvalidChargePointAmountException("Invalid Charge Point : [$amount]")
-        }
-
         return PointResponse.Point.of(
             pointService.charge(id, amount),
         )
