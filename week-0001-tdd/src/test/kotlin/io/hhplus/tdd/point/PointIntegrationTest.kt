@@ -107,6 +107,36 @@ class PointIntegrationTest {
                 jsonPath("$.details[0].timeMillis") { value(chargedUserPoint.updateMillis) }
             }
         }
+
+        @Test
+        fun `한 유저가 충전을 1회, 사용 1회를 했었다면, 충전 1회 사용 1회 내역 조회가 성공한다`() {
+            // Given
+            val existUserId = 0L
+            val chargingPoint = 10000L
+            val usingPoint = 5000L
+
+            val user = userRepository.save(existUserId)
+            val chargedUserPoint = pointService.charge(existUserId, chargingPoint)
+            val usedUserPoint = pointService.use(existUserId, usingPoint)
+
+            val result =
+                mockMvc.get("/point/$existUserId/histories") {
+                    contentType = MediaType.APPLICATION_JSON
+                }
+
+            result.andExpectAll {
+                status { isOk() }
+                jsonPath("$.userId") { value(user.id) }
+                jsonPath("$.details[0].detailId") { value(1L) }
+                jsonPath("$.details[0].type") { value(TransactionType.CHARGE.toString()) }
+                jsonPath("$.details[0].amount") { value(chargedUserPoint.point) }
+                jsonPath("$.details[0].timeMillis") { value(chargedUserPoint.updateMillis) }
+                jsonPath("$.details[1].detailId") { value(2L) }
+                jsonPath("$.details[1].type") { value(TransactionType.USE.toString()) }
+                jsonPath("$.details[1].amount") { value(usedUserPoint.point) }
+                jsonPath("$.details[1].timeMillis") { value(usedUserPoint.updateMillis) }
+            }
+        }
     }
 
     companion object {
