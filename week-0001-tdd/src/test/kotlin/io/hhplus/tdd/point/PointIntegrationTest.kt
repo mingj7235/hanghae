@@ -243,6 +243,25 @@ class PointIntegrationTest(
                     jsonPath("$.message") { value("Not found user. [id] = [$NON_EXISTED_USER_ID]") }
                 }
         }
+
+        @Test
+        fun `현재 유저가 가지고 있는 포인트보다 더 많은 포인트를 사용하려고 하면 예외를 리턴한다`() {
+            val existUserId = 0L
+            val currentPoint = 500L
+            val amount = 1000L
+
+            val user = userRepository.save(existUserId)
+            userPointRepository.insertOrUpdate(id = user.id, amount = currentPoint)
+
+            mockMvc.patch("/point/$existUserId/use") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(amount)
+            }
+                .andExpect {
+                    status { isBadRequest() }
+                    jsonPath("$.message") { value("Insufficient Point. Current Point : $currentPoint") }
+                }
+        }
     }
 
     companion object {
