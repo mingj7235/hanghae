@@ -46,7 +46,7 @@ class PointService(
         }
 
         if (amount < 0) {
-            throw PointException.InvalidAmountException("Invalid Charge Point : [$amount]")
+            throw PointException.InvalidAmountException("Invalid amount. Amount must be greater than 0. Requested amount : [$amount]")
         }
 
         val currentUserPoint = userPointRepository.selectById(id)
@@ -79,7 +79,7 @@ class PointService(
         }
 
         if (amount < 0) {
-            throw PointException.InvalidAmountException("Invalid Use Point : [$amount]")
+            throw PointException.InvalidAmountException("Invalid amount. Amount must be greater than 0. Requested amount : [$amount]")
         }
 
         val currentUserPoint = userPointRepository.selectById(id)

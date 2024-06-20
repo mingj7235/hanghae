@@ -187,7 +187,7 @@ class PointIntegrationTest(
             }
                 .andExpect {
                     status { isBadRequest() }
-                    jsonPath("$.message") { value("Invalid Charge Point : [$amount]") }
+                    jsonPath("$.message") { value("Invalid amount. Amount must be greater than 0. Requested amount : [$amount]") }
                 }
         }
 

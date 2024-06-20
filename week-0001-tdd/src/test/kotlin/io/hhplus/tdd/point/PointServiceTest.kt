@@ -143,7 +143,7 @@ class PointServiceTest {
                 }
 
             assertThat(exception)
-                .message().isEqualTo("Invalid Charge Point : [$amount]")
+                .message().isEqualTo("Invalid amount. Amount must be greater than 0. Requested amount : [$amount]")
         }
 
         @Test
@@ -219,7 +219,7 @@ class PointServiceTest {
                 }
 
             assertThat(exception)
-                .message().isEqualTo("Invalid Use Point : [$amount]")
+                .message().isEqualTo("Invalid amount. Amount must be greater than 0. Requested amount : [$amount]")
         }
 
         @Test

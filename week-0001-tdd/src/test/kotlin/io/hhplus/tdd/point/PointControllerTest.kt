@@ -241,7 +241,7 @@ class PointControllerTest(
                     amount = -1000,
                 ),
             ).willThrow(
-                PointException.InvalidAmountException("Invalid Charge Point : [$amount]"),
+                PointException.InvalidAmountException("Invalid amount. Amount must be greater than 0. Requested amount : [$amount]"),
             )
 
             // When
@@ -254,10 +254,9 @@ class PointControllerTest(
             // Then
             result.andExpect {
                 status { isBadRequest() }
-                jsonPath("$.message") { value("Invalid Charge Point : [$amount]") }
+                jsonPath("$.message") { value("Invalid amount. Amount must be greater than 0. Requested amount : [$amount]") }
             }
         }
-        //
 
         @Test
         fun `특정 유저의 포인트를 충전한다`() {
@@ -324,6 +323,35 @@ class PointControllerTest(
             result.andExpect {
                 status { isBadRequest() }
                 jsonPath("$.message") { value("Not found user. [id] = [$notExistId]") }
+            }
+        }
+
+        @Test
+        fun `음수 값은 사용이 불가능하다`() {
+            // Given
+            val userId = 0L
+            val amount = -1000L
+
+            given(
+                pointService.use(
+                    id = userId,
+                    amount = -1000,
+                ),
+            ).willThrow(
+                PointException.InvalidAmountException("Invalid amount. Amount must be greater than 0. Requested amount : [$amount]"),
+            )
+
+            // When
+            val result =
+                mockMvc.patch("/point/$userId/use") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(amount)
+                }
+
+            // Then
+            result.andExpect {
+                status { isBadRequest() }
+                jsonPath("$.message") { value("Invalid amount. Amount must be greater than 0. Requested amount : [$amount]") }
             }
         }
 
