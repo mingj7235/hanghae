@@ -1,5 +1,7 @@
 package io.hhplus.tdd
 
+import io.hhplus.tdd.point.exception.PointException
+import io.hhplus.tdd.user.exception.UserException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -19,6 +21,20 @@ class ApiControllerAdvice : ResponseEntityExceptionHandler() {
         return ResponseEntity(
             ErrorResponse("500", "에러가 발생했습니다."),
             HttpStatus.INTERNAL_SERVER_ERROR,
+        )
+    }
+
+    @ExceptionHandler(
+        value = [
+            UserException.UserNotFound::class,
+            PointException.InvalidAmountException::class,
+            PointException.InsufficientPointsException::class,
+        ],
+    )
+    fun handleCustomException(e: Exception): ResponseEntity<ErrorResponse> {
+        return ResponseEntity(
+            ErrorResponse("400", e.message.toString()),
+            HttpStatus.BAD_REQUEST,
         )
     }
 }

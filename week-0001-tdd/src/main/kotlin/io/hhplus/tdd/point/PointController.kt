@@ -1,12 +1,20 @@
 package io.hhplus.tdd.point
 
+import io.hhplus.tdd.point.response.PointResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/point")
-class PointController {
+class PointController(
+    private val pointService: PointService,
+) {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     /**
@@ -15,8 +23,10 @@ class PointController {
     @GetMapping("{id}")
     fun point(
         @PathVariable id: Long,
-    ): UserPoint {
-        return UserPoint(0, 0, 0)
+    ): PointResponse.Point {
+        return PointResponse.Point.of(
+            pointService.getPointBy(id),
+        )
     }
 
     /**
@@ -25,8 +35,10 @@ class PointController {
     @GetMapping("{id}/histories")
     fun history(
         @PathVariable id: Long,
-    ): List<PointHistory> {
-        return emptyList()
+    ): PointResponse.History {
+        return PointResponse.History.of(
+            pointService.getHistoryBy(id),
+        )
     }
 
     /**
@@ -36,8 +48,10 @@ class PointController {
     fun charge(
         @PathVariable id: Long,
         @RequestBody amount: Long,
-    ): UserPoint {
-        return UserPoint(0, 0, 0)
+    ): PointResponse.Point {
+        return PointResponse.Point.of(
+            pointService.charge(id, amount),
+        )
     }
 
     /**
@@ -47,7 +61,9 @@ class PointController {
     fun use(
         @PathVariable id: Long,
         @RequestBody amount: Long,
-    ): UserPoint {
-        return UserPoint(0, 0, 0)
+    ): PointResponse.Point {
+        return PointResponse.Point.of(
+            pointService.use(id, amount),
+        )
     }
 }
