@@ -11,8 +11,8 @@ class ApplySuccessHistory(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    @Column(name = "user_id")
-    val userId: Long,
+    @Column(name = "student_id")
+    val student_id: Long,
     @Column(name = "lecture_id")
     val lectureId: Long,
 ) : BaseEntity()
