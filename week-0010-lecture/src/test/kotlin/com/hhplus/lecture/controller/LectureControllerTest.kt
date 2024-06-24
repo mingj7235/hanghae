@@ -44,6 +44,27 @@ class LectureControllerTest(
     inner class LectureApplyTest {
         @Test
         fun `존재하지 않는 학생이 특강을 신청했을 경우 예외가 발생한다`() {
+            val nonExistStudentId = NON_EXISTED_USER_ID
+            val lectureId = 0L
+
+            val applyRequest =
+                LectureRequest.Apply(
+                    studentId = nonExistStudentId,
+                    lectureId = lectureId,
+                )
+
+            mockMvc.post("/lectures/apply") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(applyRequest)
+            }
+                .andExpect {
+                    status { isNotFound() }
+                    jsonPath("$.message") { value("Not found user. [id] = [$NON_EXISTED_USER_ID]") }
+                }
+        }
+
+        @Test
+        fun `존재하지 않는 특강을 신청했을 경우 예외가 발생한다`() {
             TODO()
         }
 
@@ -84,5 +105,9 @@ class LectureControllerTest(
                     jsonPath("$.result") { value(true) }
                 }
         }
+    }
+
+    companion object {
+        const val NON_EXISTED_USER_ID = -1L
     }
 }
