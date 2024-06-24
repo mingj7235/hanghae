@@ -1,15 +1,15 @@
 package com.hhplus.lecture.controller.request
 
-import com.hhplus.lecture.domain.dto.LectureServiceDto
+import com.hhplus.lecture.domain.dto.LectureApplyServiceDto
 
-object LectureRequest {
+object LectureApplyRequest {
     data class Apply(
         val studentId: Long,
         val lectureId: Long,
     ) {
         companion object {
-            fun toApplyDto(request: Apply): LectureServiceDto.Apply {
-                return LectureServiceDto.Apply(
+            fun toApplyDto(request: Apply): LectureApplyServiceDto.Apply {
+                return LectureApplyServiceDto.Apply(
                     studentId = request.studentId,
                     lectureId = request.lectureId,
                 )
