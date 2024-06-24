@@ -1,11 +1,11 @@
 package com.hhplus.lecture.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.hhplus.lecture.controller.request.LectureRequest
+import com.hhplus.lecture.controller.request.LectureApplyRequest
 import com.hhplus.lecture.domain.LectureApplyService
-import com.hhplus.lecture.infra.repository.ApplySuccessHistoryRepository
-import com.hhplus.lecture.infra.repository.LectureRepository
-import com.hhplus.lecture.infra.repository.StudentRepository
+import com.hhplus.lecture.infra.repository.jpa.JpaApplyHistoryRepository
+import com.hhplus.lecture.infra.repository.jpa.JpaLectureRepository
+import com.hhplus.lecture.infra.repository.jpa.JpaStudentRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -24,19 +24,19 @@ import org.springframework.test.web.servlet.post
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(locations = ["classpath:application-test.yml"])
-class LectureControllerTest(
+class LectureApplyControllerTest(
     @Autowired private val objectMapper: ObjectMapper,
     @Autowired private val mockMvc: MockMvc,
     @Autowired private val lectureApplyService: LectureApplyService,
-    @Autowired private val lectureRepository: LectureRepository,
-    @Autowired private val studentRepository: StudentRepository,
-    @Autowired private val applySuccessHistoryRepository: ApplySuccessHistoryRepository,
+    @Autowired private val jpaLectureRepository: JpaLectureRepository,
+    @Autowired private val jpaStudentRepository: JpaStudentRepository,
+    @Autowired private val jpaApplyHistoryRepository: JpaApplyHistoryRepository,
 ) {
     @BeforeEach
     fun setup() {
-        lectureRepository.deleteAll()
-        studentRepository.deleteAll()
-        applySuccessHistoryRepository.deleteAll()
+        jpaLectureRepository.deleteAll()
+        jpaStudentRepository.deleteAll()
+        jpaApplyHistoryRepository.deleteAll()
     }
 
     @Nested
@@ -44,11 +44,11 @@ class LectureControllerTest(
     inner class LectureApplyTest {
         @Test
         fun `존재하지 않는 학생이 특강을 신청했을 경우 예외가 발생한다`() {
-            val nonExistStudentId = NON_EXISTED_USER_ID
+            val nonExistStudentId = NON_EXISTED_STUDENT_ID
             val lectureId = 0L
 
             val applyRequest =
-                LectureRequest.Apply(
+                LectureApplyRequest.Apply(
                     studentId = nonExistStudentId,
                     lectureId = lectureId,
                 )
@@ -59,7 +59,7 @@ class LectureControllerTest(
             }
                 .andExpect {
                     status { isNotFound() }
-                    jsonPath("$.message") { value("Not found user. [id] = [$NON_EXISTED_USER_ID]") }
+                    jsonPath("$.message") { value("Not found user. [id] = [$NON_EXISTED_STUDENT_ID]") }
                 }
         }
 
@@ -91,7 +91,7 @@ class LectureControllerTest(
         @Test
         fun `수강신청이 성공한다`() {
             val applyRequest =
-                LectureRequest.Apply(
+                LectureApplyRequest.Apply(
                     studentId = 0L,
                     lectureId = 0L,
                 )
@@ -108,6 +108,6 @@ class LectureControllerTest(
     }
 
     companion object {
-        const val NON_EXISTED_USER_ID = -1L
+        const val NON_EXISTED_STUDENT_ID = -1L
     }
 }

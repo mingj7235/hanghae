@@ -1,5 +1,7 @@
 package com.hhplus.lecture.domain.dto
 
+import com.hhplus.lecture.infra.entity.Lecture
+
 object LectureApplyServiceDto {
     data class Apply(
         val studentId: Long,
@@ -19,6 +21,22 @@ object LectureApplyServiceDto {
                 return Student(
                     studentId = studentEntity.id!!,
                     name = studentEntity.name,
+                )
+            }
+        }
+    }
+
+    data class Lecture(
+        val lectureId: Long,
+        val title: String,
+        val capacity: Int,
+    ) {
+        companion object {
+            fun of(lectureEntity: com.hhplus.lecture.infra.entity.Lecture): Lecture {
+                return Lecture(
+                    lectureId = lectureEntity.id!!,
+                    title = lectureEntity.title,
+                    capacity = lectureEntity.capacity,
                 )
             }
         }
