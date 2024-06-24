@@ -13,6 +13,4 @@ class Student(
     val id: Long? = null,
     @Column(name = "name", nullable = false)
     val name: String,
-    @Column(name = "email", nullable = false, unique = true)
-    val email: String,
 ) : BaseEntity()

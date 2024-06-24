@@ -13,4 +13,8 @@ class StudentRepositoryImpl(
     override fun findById(studentId: Long): Student? {
         return jpaStudentRepository.findByIdOrNull(studentId)
     }
+
+    override fun deleteAll() {
+        jpaStudentRepository.deleteAll()
+    }
 }

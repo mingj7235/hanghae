@@ -13,6 +13,14 @@ object LectureApplyServiceDto {
     data class Student(
         val studentId: Long,
         val name: String,
-        val email: String,
-    )
+    ) {
+        companion object {
+            fun of(studentEntity: com.hhplus.lecture.infra.entity.Student): Student {
+                return Student(
+                    studentId = studentEntity.id!!,
+                    name = studentEntity.name,
+                )
+            }
+        }
+    }
 }
