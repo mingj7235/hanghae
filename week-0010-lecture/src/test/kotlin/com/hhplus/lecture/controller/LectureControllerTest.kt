@@ -2,8 +2,7 @@ package com.hhplus.lecture.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.hhplus.lecture.controller.request.LectureRequest
-import com.hhplus.lecture.domain.lecture.LectureService
-import com.hhplus.lecture.domain.student.StudentService
+import com.hhplus.lecture.domain.LectureApplyService
 import com.hhplus.lecture.infra.repository.ApplySuccessHistoryRepository
 import com.hhplus.lecture.infra.repository.LectureRepository
 import com.hhplus.lecture.infra.repository.StudentRepository
@@ -28,8 +27,7 @@ import org.springframework.test.web.servlet.post
 class LectureControllerTest(
     @Autowired private val objectMapper: ObjectMapper,
     @Autowired private val mockMvc: MockMvc,
-    @Autowired private val lectureService: LectureService,
-    @Autowired private val studentService: StudentService,
+    @Autowired private val lectureApplyService: LectureApplyService,
     @Autowired private val lectureRepository: LectureRepository,
     @Autowired private val studentRepository: StudentRepository,
     @Autowired private val applySuccessHistoryRepository: ApplySuccessHistoryRepository,
