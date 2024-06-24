@@ -1,6 +1,7 @@
 package com.hhplus.lecture.domain
 
 import com.hhplus.lecture.common.exception.errors.StudentException
+import com.hhplus.lecture.infra.entity.Student
 import com.hhplus.lecture.infra.repository.StudentRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -38,6 +39,23 @@ class StudentManagerTest {
 
         assertThat(exception)
             .message().contains("Not found user. [id] = [$NON_EXISTED_USER_ID]")
+    }
+
+    @Test
+    fun `존재하는 학생이라면 그 학생을 리턴한다`() {
+        val studentId = 0L
+        val studentName = "Student"
+        `when`(studentRepository.findById(studentId)).thenReturn(
+            Student(
+                id = studentId,
+                name = studentName,
+            ),
+        )
+
+        val student = studentManager.findById(studentId)
+
+        assertThat(student.studentId).isEqualTo(studentId)
+        assertThat(student.name).isEqualTo(studentName)
     }
 
     companion object {
