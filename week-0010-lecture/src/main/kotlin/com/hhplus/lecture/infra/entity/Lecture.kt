@@ -3,6 +3,8 @@ package com.hhplus.lecture.infra.entity
 import com.hhplus.lecture.common.type.LectureAvailableStatus
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -22,5 +24,6 @@ class Lecture(
     @Column(name = "capacity", nullable = false)
     val capacity: Int,
     @Column(name = "available_status", nullable = false)
+    @Enumerated(value = EnumType.STRING)
     val availableStatus: LectureAvailableStatus = LectureAvailableStatus.OPEN,
 ) : BaseEntity()
