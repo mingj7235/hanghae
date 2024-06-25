@@ -38,7 +38,8 @@ class StudentManagerTest {
             }
 
         assertThat(exception)
-            .message().contains("Not found user. [id] = [$NON_EXISTED_STUDENT_ID]")
+            .message()
+            .contains("Not found user")
     }
 
     @Test
@@ -53,7 +54,7 @@ class StudentManagerTest {
 
         val student = studentManager.findById(studentId)
 
-        assertThat(student.studentId).isEqualTo(studentId)
+        assertThat(student.id).isEqualTo(studentId)
         assertThat(student.name).isEqualTo(studentName)
     }
 

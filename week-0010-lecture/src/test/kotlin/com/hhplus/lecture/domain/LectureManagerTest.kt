@@ -95,6 +95,32 @@ class LectureManagerTest {
     }
 
     @Test
+    fun `수강 신청이 가능한 강의를 수강신청 한다면, 그 강의를 리턴한다`() {
+        val lectureId = 0L
+        val lecture =
+            Lecture(
+                title = LECTURE_TITLE,
+                applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
+                lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
+                capacity = 30,
+            )
+
+        `when`(lectureRepository.findById(lectureId)).thenReturn(lecture)
+
+        val availableLecture = lectureManager.findAvailableById(lectureId)
+
+        assertThat(availableLecture.id).isEqualTo(lectureId)
+        assertThat(availableLecture.title).isEqualTo(LECTURE_TITLE)
+        assertThat(availableLecture.capacity).isEqualTo(LECTURE_CAPACITY)
+    }
+
+    companion object {
+        const val NON_EXISTED_LECTURE_ID = -1L
+        const val LECTURE_TITLE = "TEST TITLE"
+        const val LECTURE_CAPACITY = 30
+    }
+
+    @Test
     fun `수강인원이 꽉 찬 강의를 수강 신청하면 예외를 리턴한다`() {
         val lectureId = 0L
         val lecture =
@@ -111,37 +137,11 @@ class LectureManagerTest {
 
         val exception =
             assertThrows<LectureException.EnrollmentFull> {
-                lectureManager.findAvailableById(lectureId)
+                lectureManager.checkCurrentEnrollmentCount(lecture)
             }
 
         assertThat(exception)
             .message()
             .contains("Lecture is fully booked")
-    }
-
-    @Test
-    fun `수강 신청이 가능한 강의를 수강신청 한다면, 그 강의를 리턴한다`() {
-        val lectureId = 0L
-        val lecture =
-            Lecture(
-                title = LECTURE_TITLE,
-                applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
-                lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
-                capacity = 30,
-            )
-
-        `when`(lectureRepository.findById(lectureId)).thenReturn(lecture)
-
-        val availableLecture = lectureManager.findAvailableById(lectureId)
-
-        assertThat(availableLecture.lectureId).isEqualTo(lectureId)
-        assertThat(availableLecture.title).isEqualTo(LECTURE_TITLE)
-        assertThat(availableLecture.capacity).isEqualTo(LECTURE_CAPACITY)
-    }
-
-    companion object {
-        const val NON_EXISTED_LECTURE_ID = -1L
-        const val LECTURE_TITLE = "TEST TITLE"
-        const val LECTURE_CAPACITY = 30
     }
 }

@@ -2,6 +2,9 @@ package com.hhplus.lecture.domain
 
 import com.hhplus.lecture.common.exception.errors.ApplyHistoryException
 import com.hhplus.lecture.common.type.ApplyStatus
+import com.hhplus.lecture.infra.entity.ApplyHistory
+import com.hhplus.lecture.infra.entity.Lecture
+import com.hhplus.lecture.infra.entity.Student
 import com.hhplus.lecture.infra.repository.ApplyHistoryRepository
 import org.springframework.stereotype.Component
 
@@ -22,5 +25,19 @@ class ApplyHistoryManager(
         ) {
             throw ApplyHistoryException.AlreadyApplied()
         }
+    }
+
+    fun save(
+        student: Student,
+        lecture: Lecture,
+        applyStatus: ApplyStatus,
+    ) {
+        applyHistoryRepository.save(
+            ApplyHistory(
+                student = student,
+                lecture = lecture,
+                applyStatus = applyStatus,
+            ),
+        )
     }
 }
