@@ -8,9 +8,13 @@ import jakarta.persistence.Id
 
 @Entity
 class Student(
+    name: String,
+) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0
+
     @Column(name = "name", nullable = false)
-    val name: String,
-) : BaseEntity()
+    var name: String = name
+        protected set
+}

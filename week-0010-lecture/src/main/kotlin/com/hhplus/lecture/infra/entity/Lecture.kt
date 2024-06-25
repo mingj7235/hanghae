@@ -8,16 +8,29 @@ import jakarta.persistence.Id
 import java.time.LocalDateTime
 
 @Entity
-class Lecture(
+open class Lecture(
+    title: String,
+    applyStartAt: LocalDateTime,
+    lectureAt: LocalDateTime,
+    capacity: Int,
+) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0
+
     @Column(name = "title", nullable = false)
-    val title: String,
+    var title: String = title
+        protected set
+
     @Column(name = "apply_start_at", nullable = false)
-    val applyStartAt: LocalDateTime,
+    var applyStartAt: LocalDateTime = applyStartAt
+        protected set
+
     @Column(name = "lecture_at", nullable = false)
-    val lectureAt: LocalDateTime,
+    var lectureAt: LocalDateTime = lectureAt
+        protected set
+
     @Column(name = "capacity", nullable = false)
-    val capacity: Int,
-) : BaseEntity()
+    var capacity: Int = capacity
+        protected set
+}

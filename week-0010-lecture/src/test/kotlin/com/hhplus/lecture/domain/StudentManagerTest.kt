@@ -47,7 +47,6 @@ class StudentManagerTest {
         val studentName = "Student"
         `when`(studentRepository.findById(studentId)).thenReturn(
             Student(
-                id = studentId,
                 name = studentName,
             ),
         )
