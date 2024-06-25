@@ -3,34 +3,17 @@ package com.hhplus.lecture.infra.repository.implement
 import com.hhplus.lecture.infra.entity.Lecture
 import com.hhplus.lecture.infra.repository.LectureRepository
 import com.hhplus.lecture.infra.repository.jpa.JpaLectureRepository
-import jakarta.persistence.EntityManager
-import jakarta.persistence.PersistenceContext
 import org.springframework.stereotype.Repository
-import java.time.LocalDateTime
+import kotlin.jvm.optionals.getOrNull
 
 @Repository
 class LectureRepositoryImpl(
     private val jpaLectureRepository: JpaLectureRepository,
-    @PersistenceContext
-    private val entityManager: EntityManager,
 ) : LectureRepository {
-    override fun findAvailableById(
-        lectureId: Long,
-        currentDateTime: LocalDateTime,
-    ): Lecture? {
-        val query =
-            entityManager.createQuery(
-                """
-            SELECT l FROM Lecture l 
-            WHERE l.id = :lectureId 
-              AND :currentDateTime BETWEEN l.applyStartAt AND l.lectureAt
-        """,
-                Lecture::class.java,
-            )
-        query.setParameter("lectureId", lectureId)
-        query.setParameter("currentDateTime", currentDateTime)
+    override fun findById(lectureId: Long): Lecture? = jpaLectureRepository.findById(lectureId).getOrNull()
 
-        return query.resultList.firstOrNull()
+    override fun save(lecture: Lecture) {
+        jpaLectureRepository.save(lecture)
     }
 
     override fun deleteAll() {

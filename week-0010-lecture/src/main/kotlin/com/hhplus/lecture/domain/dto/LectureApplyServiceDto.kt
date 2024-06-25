@@ -17,12 +17,11 @@ object LectureApplyServiceDto {
         val name: String,
     ) {
         companion object {
-            fun of(studentEntity: com.hhplus.lecture.infra.entity.Student): Student {
-                return Student(
-                    studentId = studentEntity.id!!,
+            fun of(studentEntity: com.hhplus.lecture.infra.entity.Student): Student =
+                Student(
+                    studentId = studentEntity.id,
                     name = studentEntity.name,
                 )
-            }
         }
     }
 
@@ -32,13 +31,12 @@ object LectureApplyServiceDto {
         val capacity: Int,
     ) {
         companion object {
-            fun of(lectureEntity: com.hhplus.lecture.infra.entity.Lecture): Lecture {
-                return Lecture(
-                    lectureId = lectureEntity.id!!,
+            fun of(lectureEntity: com.hhplus.lecture.infra.entity.Lecture): Lecture =
+                Lecture(
+                    lectureId = lectureEntity.id,
                     title = lectureEntity.title,
                     capacity = lectureEntity.capacity,
                 )
-            }
         }
     }
 }

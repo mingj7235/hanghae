@@ -8,7 +8,7 @@ import jakarta.persistence.Id
 import java.time.LocalDateTime
 
 @Entity
-open class Lecture(
+class Lecture(
     title: String,
     applyStartAt: LocalDateTime,
     lectureAt: LocalDateTime,
@@ -33,4 +33,11 @@ open class Lecture(
     @Column(name = "capacity", nullable = false)
     var capacity: Int = capacity
         protected set
+
+    @Column(name = "capacity", nullable = false)
+    var currentEnrollmentCount: Int = 0
+
+    fun increaseCurrentEnrollmentCount() {
+        this.currentEnrollmentCount++
+    }
 }
