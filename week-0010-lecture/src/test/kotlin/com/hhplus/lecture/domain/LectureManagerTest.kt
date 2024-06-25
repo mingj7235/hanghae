@@ -95,6 +95,31 @@ class LectureManagerTest {
     }
 
     @Test
+    fun `수강인원이 꽉 찬 강의를 수강 신청하면 예외를 리턴한다`() {
+        val lectureId = 0L
+        val lecture =
+            Lecture(
+                title = LECTURE_TITLE,
+                applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
+                lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
+                capacity = 1,
+            )
+
+        lecture.increaseCurrentEnrollmentCount()
+
+        `when`(lectureRepository.findById(lectureId)).thenReturn(lecture)
+
+        val exception =
+            assertThrows<LectureException.EnrollmentFull> {
+                lectureManager.findAvailableById(lectureId)
+            }
+
+        assertThat(exception)
+            .message()
+            .contains("Lecture is fully booked")
+    }
+
+    @Test
     fun `수강 신청이 가능한 강의를 수강신청 한다면, 그 강의를 리턴한다`() {
         val lectureId = 0L
         val lecture =

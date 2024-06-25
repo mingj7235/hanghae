@@ -40,4 +40,6 @@ class Lecture(
     fun increaseCurrentEnrollmentCount() {
         this.currentEnrollmentCount++
     }
+
+    fun isEnrollmentFull(): Boolean = currentEnrollmentCount == capacity
 }

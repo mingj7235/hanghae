@@ -16,7 +16,7 @@ class LectureApplyService(
         val student = studentManager.findById(applyDto.studentId)
 
         // 신청하려고 하는 강의가 available 한지 확인한다. -> lectureManager
-        lectureManager.findAvailableById(applyDto.lectureId)
+        val availableLecture = lectureManager.findAvailableById(applyDto.lectureId)
 
         // 학생이 강의를 이미 등록했는지 찾는다. (applyHistory 의 status 가 completed 인지 찾는다) -> applyHistoryManager
 
