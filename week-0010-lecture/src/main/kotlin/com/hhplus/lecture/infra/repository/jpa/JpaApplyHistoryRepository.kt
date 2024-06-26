@@ -8,4 +8,6 @@ interface JpaApplyHistoryRepository : JpaRepository<ApplyHistory, Long> {
         studentId: Long,
         lectureId: Long,
     ): List<ApplyHistory>
+
+    fun findByStudentId(studentId: Long): List<ApplyHistory>
 }

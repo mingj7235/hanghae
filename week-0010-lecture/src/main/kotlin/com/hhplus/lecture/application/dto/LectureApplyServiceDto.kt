@@ -1,5 +1,6 @@
 package com.hhplus.lecture.application.dto
 
+import com.hhplus.lecture.common.type.ApplyStatus
 import com.hhplus.lecture.common.type.LectureStatus
 import java.time.LocalDateTime
 
@@ -44,4 +45,10 @@ object LectureApplyServiceDto {
                 )
         }
     }
+
+    data class Status(
+        val lectureId: Long,
+        val lectureTitle: String,
+        val applyStatus: ApplyStatus,
+    )
 }

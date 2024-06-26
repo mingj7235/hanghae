@@ -1,6 +1,7 @@
 package com.hhplus.lecture.controller.response
 
 import com.hhplus.lecture.application.dto.LectureApplyServiceDto
+import com.hhplus.lecture.common.type.ApplyStatus
 import com.hhplus.lecture.common.type.LectureStatus
 import java.time.LocalDateTime
 
@@ -35,6 +36,21 @@ object LectureApplyResponse {
                     currentEnrollmentCount = lectureDto.currentEnrollmentCount,
                     lectureAt = lectureDto.lectureAt,
                     lectureStatus = lectureDto.lectureStatus,
+                )
+        }
+    }
+
+    data class Status(
+        val lectureId: Long,
+        val lectureTitle: String,
+        val applyStatus: ApplyStatus,
+    ) {
+        companion object {
+            fun of(statusDto: LectureApplyServiceDto.Status): Status =
+                Status(
+                    lectureId = statusDto.lectureId,
+                    lectureTitle = statusDto.lectureTitle,
+                    applyStatus = statusDto.applyStatus,
                 )
         }
     }

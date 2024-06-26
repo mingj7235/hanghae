@@ -93,4 +93,33 @@ class LectureApplyService(
             }.ifEmpty {
                 throw LectureException.LectureNotfound()
             }
+
+    /**
+     * 수강신청 완료 여부를 확인한다.
+     * 1. 존재하는 학생인지 검증한다.
+     * 2. 현재 강의가 존재하는 강의인지 검증한다. (존재하는 id 값이 있는지, 현재 시간 기준으로 존재하는 강의인지)
+     * 3. 신청 내역중에 성공한 내역이 있다면 성공, 없다면 실패를 반환한다.
+     */
+    fun getApplyStatus(
+        lectureId: Long,
+        studentId: Long,
+    ): LectureApplyServiceDto.Status {
+        val student = studentManager.findById(studentId)
+        val lecture = lectureManager.findAvailableById(lectureId)
+
+        return LectureApplyServiceDto.Status(
+            lectureId = lecture.id,
+            lectureTitle = lecture.title,
+            applyStatus =
+                if (applyHistoryManager.hasApplied(
+                        studentId = student.id,
+                        lectureId = lecture.id,
+                    )
+                ) {
+                    ApplyStatus.COMPLETED
+                } else {
+                    ApplyStatus.FAILED
+                },
+        )
+    }
 }
