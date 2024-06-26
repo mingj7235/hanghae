@@ -1,8 +1,8 @@
 package com.hhplus.lecture.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.hhplus.lecture.application.LectureApplyService
 import com.hhplus.lecture.controller.request.LectureApplyRequest
-import com.hhplus.lecture.domain.LectureApplyService
 import com.hhplus.lecture.infra.repository.jpa.JpaApplyHistoryRepository
 import com.hhplus.lecture.infra.repository.jpa.JpaLectureRepository
 import com.hhplus.lecture.infra.repository.jpa.JpaStudentRepository
@@ -53,11 +53,11 @@ class LectureApplyControllerTest(
                     lectureId = lectureId,
                 )
 
-            mockMvc.post("/lectures/apply") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(applyRequest)
-            }
-                .andExpect {
+            mockMvc
+                .post("/lectures/apply") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(applyRequest)
+                }.andExpect {
                     status { isNotFound() }
                     jsonPath("$.message") { value("Not found user. [id] = [$NON_EXISTED_STUDENT_ID]") }
                 }
@@ -96,11 +96,11 @@ class LectureApplyControllerTest(
                     lectureId = 0L,
                 )
 
-            mockMvc.post("/lectures/apply") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(applyRequest)
-            }
-                .andExpect {
+            mockMvc
+                .post("/lectures/apply") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(applyRequest)
+                }.andExpect {
                     status { isOk() }
                     jsonPath("$.result") { value(true) }
                 }

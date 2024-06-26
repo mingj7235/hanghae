@@ -1,8 +1,8 @@
 package com.hhplus.lecture.controller
 
+import com.hhplus.lecture.application.LectureApplyService
 import com.hhplus.lecture.controller.request.LectureApplyRequest
 import com.hhplus.lecture.controller.response.LectureApplyResponse
-import com.hhplus.lecture.domain.LectureApplyService
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,11 +16,10 @@ class LectureApplyController(
     @PostMapping("/apply")
     fun apply(
         @RequestBody request: LectureApplyRequest.Apply,
-    ): LectureApplyResponse.ApplyResult {
-        return LectureApplyResponse.ApplyResult.of(
+    ): LectureApplyResponse.ApplyResult =
+        LectureApplyResponse.ApplyResult.of(
             lectureApplyService.apply(
                 LectureApplyRequest.Apply.toApplyDto(request),
             ),
         )
-    }
 }

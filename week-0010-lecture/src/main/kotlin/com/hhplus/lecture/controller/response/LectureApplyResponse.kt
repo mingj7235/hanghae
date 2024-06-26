@@ -1,6 +1,6 @@
 package com.hhplus.lecture.controller.response
 
-import com.hhplus.lecture.domain.dto.LectureApplyServiceDto
+import com.hhplus.lecture.application.dto.LectureApplyServiceDto
 
 object LectureApplyResponse {
     data class ApplyResult(

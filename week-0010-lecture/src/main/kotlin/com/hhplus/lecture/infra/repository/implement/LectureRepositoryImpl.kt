@@ -1,7 +1,7 @@
 package com.hhplus.lecture.infra.repository.implement
 
-import com.hhplus.lecture.infra.entity.Lecture
-import com.hhplus.lecture.infra.repository.LectureRepository
+import com.hhplus.lecture.application.repository.LectureRepository
+import com.hhplus.lecture.domain.entity.Lecture
 import com.hhplus.lecture.infra.repository.jpa.JpaLectureRepository
 import org.springframework.stereotype.Repository
 import kotlin.jvm.optionals.getOrNull

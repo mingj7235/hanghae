@@ -1,11 +1,12 @@
 package com.hhplus.lecture.domain
 
+import com.hhplus.lecture.application.ApplyHistoryManager
+import com.hhplus.lecture.application.repository.ApplyHistoryRepository
 import com.hhplus.lecture.common.exception.errors.ApplyHistoryException
 import com.hhplus.lecture.common.type.ApplyStatus
-import com.hhplus.lecture.infra.entity.ApplyHistory
-import com.hhplus.lecture.infra.entity.Lecture
-import com.hhplus.lecture.infra.entity.Student
-import com.hhplus.lecture.infra.repository.ApplyHistoryRepository
+import com.hhplus.lecture.domain.entity.ApplyHistory
+import com.hhplus.lecture.domain.entity.Lecture
+import com.hhplus.lecture.domain.entity.Student
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

@@ -1,9 +1,9 @@
-package com.hhplus.lecture.domain
+package com.hhplus.lecture.application
 
+import com.hhplus.lecture.application.dto.LectureApplyServiceDto
 import com.hhplus.lecture.common.type.ApplyStatus
-import com.hhplus.lecture.domain.dto.LectureApplyServiceDto
-import com.hhplus.lecture.infra.entity.Lecture
-import com.hhplus.lecture.infra.entity.Student
+import com.hhplus.lecture.domain.entity.Lecture
+import com.hhplus.lecture.domain.entity.Student
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

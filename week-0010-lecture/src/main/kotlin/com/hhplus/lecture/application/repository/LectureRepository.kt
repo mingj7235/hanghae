@@ -1,6 +1,6 @@
-package com.hhplus.lecture.infra.repository
+package com.hhplus.lecture.application.repository
 
-import com.hhplus.lecture.infra.entity.Lecture
+import com.hhplus.lecture.domain.entity.Lecture
 
 interface LectureRepository {
     fun findById(lectureId: Long): Lecture?

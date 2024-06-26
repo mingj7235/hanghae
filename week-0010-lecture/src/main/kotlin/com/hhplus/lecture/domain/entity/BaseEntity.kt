@@ -1,4 +1,4 @@
-package com.hhplus.lecture.infra.entity
+package com.hhplus.lecture.domain.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.EntityListeners

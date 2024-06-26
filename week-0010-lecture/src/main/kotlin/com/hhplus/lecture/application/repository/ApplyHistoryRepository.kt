@@ -1,6 +1,6 @@
-package com.hhplus.lecture.infra.repository
+package com.hhplus.lecture.application.repository
 
-import com.hhplus.lecture.infra.entity.ApplyHistory
+import com.hhplus.lecture.domain.entity.ApplyHistory
 
 interface ApplyHistoryRepository {
     fun findByStudentIdAndLectureId(

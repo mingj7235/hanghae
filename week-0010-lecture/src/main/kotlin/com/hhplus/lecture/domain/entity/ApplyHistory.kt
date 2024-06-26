@@ -1,4 +1,4 @@
-package com.hhplus.lecture.infra.entity
+package com.hhplus.lecture.domain.entity
 
 import com.hhplus.lecture.common.type.ApplyStatus
 import jakarta.persistence.Column

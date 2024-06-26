@@ -1,8 +1,9 @@
 package com.hhplus.lecture.domain
 
+import com.hhplus.lecture.application.StudentManager
+import com.hhplus.lecture.application.repository.StudentRepository
 import com.hhplus.lecture.common.exception.errors.StudentException
-import com.hhplus.lecture.infra.entity.Student
-import com.hhplus.lecture.infra.repository.StudentRepository
+import com.hhplus.lecture.domain.entity.Student
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
