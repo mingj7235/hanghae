@@ -10,6 +10,7 @@ object LectureApplyServiceDto {
 
     data class ApplyResult(
         val result: Boolean,
+        val lectureTitle: String? = null,
     )
 
     data class Student(

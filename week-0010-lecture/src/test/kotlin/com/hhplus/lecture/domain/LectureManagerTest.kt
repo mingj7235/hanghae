@@ -114,12 +114,6 @@ class LectureManagerTest {
         assertThat(availableLecture.capacity).isEqualTo(LECTURE_CAPACITY)
     }
 
-    companion object {
-        const val NON_EXISTED_LECTURE_ID = -1L
-        const val LECTURE_TITLE = "TEST TITLE"
-        const val LECTURE_CAPACITY = 30
-    }
-
     @Test
     fun `수강인원이 꽉 찬 강의를 수강 신청하면 예외를 리턴한다`() {
         val lectureId = 0L
@@ -143,5 +137,11 @@ class LectureManagerTest {
         assertThat(exception)
             .message()
             .contains("Lecture is fully booked")
+    }
+
+    companion object {
+        const val NON_EXISTED_LECTURE_ID = -1L
+        const val LECTURE_TITLE = "TEST TITLE"
+        const val LECTURE_CAPACITY = 30
     }
 }

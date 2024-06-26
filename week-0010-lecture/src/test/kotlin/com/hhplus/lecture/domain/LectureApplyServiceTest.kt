@@ -49,10 +49,10 @@ class LectureApplyServiceTest {
         val student = Student("Student")
         val lecture =
             Lecture(
-                title = LectureManagerTest.LECTURE_TITLE,
+                title = LECTURE_TITLE,
                 applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
                 lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
-                capacity = LectureManagerTest.LECTURE_CAPACITY,
+                capacity = LECTURE_CAPACITY,
             )
 
         `given`(studentManager.findById(studentId)).willReturn(student)
@@ -65,6 +65,7 @@ class LectureApplyServiceTest {
 
         // then
         val applyResult = lectureApplyService.apply(applyDto)
+        assertThat(applyResult.lectureTitle).isEqualTo(LECTURE_TITLE)
         assertThat(applyResult.result).isTrue()
         verify(lectureManager).findAvailableById(lectureId)
         verify(studentManager).findById(studentId)
@@ -112,10 +113,10 @@ class LectureApplyServiceTest {
         val student = Student("Student")
         val lecture =
             Lecture(
-                title = LectureManagerTest.LECTURE_TITLE,
+                title = LECTURE_TITLE,
                 applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
                 lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
-                capacity = LectureManagerTest.LECTURE_CAPACITY,
+                capacity = LECTURE_CAPACITY,
             )
 
         `given`(studentManager.findById(studentId)).willReturn(student)
@@ -133,5 +134,10 @@ class LectureApplyServiceTest {
         verify(applyHistoryManager).checkApplyStatus(studentId, lectureId)
         verify(lectureManager).checkCurrentEnrollmentCount(lecture)
         verify(applyHistoryManager).save(student, lecture, ApplyStatus.FAILED)
+    }
+
+    companion object {
+        const val LECTURE_TITLE = "TEST TITLE"
+        const val LECTURE_CAPACITY = 30
     }
 }

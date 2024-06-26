@@ -20,11 +20,15 @@ class LectureApplyService(
     fun apply(applyDto: LectureApplyServiceDto.Apply): LectureApplyServiceDto.ApplyResult {
         val student = studentManager.findById(applyDto.studentId)
         val lecture = lectureManager.findAvailableById(applyDto.lectureId)
-        return try {
+
+        return runCatching {
             validateLectureApplication(studentId = student.id, lecture = lecture)
             applyLecture(student = student, lecture = lecture)
-            LectureApplyServiceDto.ApplyResult(result = true)
-        } catch (e: RuntimeException) {
+            LectureApplyServiceDto.ApplyResult(
+                lectureTitle = lecture.title,
+                result = true,
+            )
+        }.getOrElse { e ->
             logger.info(e.message)
             saveApplyFailedHistory(student = student, lecture = lecture)
             LectureApplyServiceDto.ApplyResult(result = false)
