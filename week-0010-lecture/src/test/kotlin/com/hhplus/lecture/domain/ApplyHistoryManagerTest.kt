@@ -42,7 +42,6 @@ class ApplyHistoryManagerTest {
                 title = LectureManagerTest.LECTURE_TITLE,
                 applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
                 lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
-                capacity = 30,
             )
         val applyHistories =
             listOf(
@@ -82,7 +81,6 @@ class ApplyHistoryManagerTest {
                 title = LectureManagerTest.LECTURE_TITLE,
                 applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
                 lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
-                capacity = 30,
             )
         val applyHistories =
             listOf(

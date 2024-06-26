@@ -56,7 +56,6 @@ class LectureApplyServiceTest {
                 title = LECTURE_TITLE,
                 applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
                 lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
-                capacity = LECTURE_CAPACITY,
             )
 
         `given`(studentManager.findById(studentId)).willReturn(student)
@@ -90,7 +89,6 @@ class LectureApplyServiceTest {
                 title = LectureManagerTest.LECTURE_TITLE,
                 applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
                 lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
-                capacity = LectureManagerTest.LECTURE_CAPACITY,
             )
 
         `given`(studentManager.findById(studentId)).willReturn(student)
@@ -120,7 +118,6 @@ class LectureApplyServiceTest {
                 title = LECTURE_TITLE,
                 applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
                 lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
-                capacity = LECTURE_CAPACITY,
             )
 
         `given`(studentManager.findById(studentId)).willReturn(student)
@@ -142,6 +139,5 @@ class LectureApplyServiceTest {
 
     companion object {
         const val LECTURE_TITLE = "TEST TITLE"
-        const val LECTURE_CAPACITY = 30
     }
 }

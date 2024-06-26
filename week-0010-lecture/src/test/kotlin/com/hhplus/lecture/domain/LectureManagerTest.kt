@@ -57,7 +57,6 @@ class LectureManagerTest {
                 title = LECTURE_TITLE,
                 applyStartAt = LocalDateTime.of(2024, 6, 27, 13, 0),
                 lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
-                capacity = LECTURE_CAPACITY,
             )
 
         `when`(lectureRepository.findById(lectureId)).thenReturn(lecture)
@@ -80,7 +79,6 @@ class LectureManagerTest {
                 title = LECTURE_TITLE,
                 applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
                 lectureAt = LocalDateTime.of(2024, 6, 25, 13, 0),
-                capacity = LECTURE_CAPACITY,
             )
 
         `when`(lectureRepository.findById(lectureId)).thenReturn(lecture)
@@ -103,7 +101,6 @@ class LectureManagerTest {
                 title = LECTURE_TITLE,
                 applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
                 lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
-                capacity = 30,
             )
 
         `when`(lectureRepository.findById(lectureId)).thenReturn(lecture)
@@ -123,9 +120,8 @@ class LectureManagerTest {
                 title = LECTURE_TITLE,
                 applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
                 lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
-                capacity = 1,
             )
-
+        lecture.updateCapacity(1)
         lecture.increaseCurrentEnrollmentCount()
 
         `when`(lectureRepository.findById(lectureId)).thenReturn(lecture)

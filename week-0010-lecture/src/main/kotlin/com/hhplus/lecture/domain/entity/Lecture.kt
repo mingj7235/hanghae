@@ -12,7 +12,6 @@ class Lecture(
     title: String,
     applyStartAt: LocalDateTime,
     lectureAt: LocalDateTime,
-    capacity: Int,
 ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +38,10 @@ class Lecture(
 
     fun increaseCurrentEnrollmentCount() {
         this.currentEnrollmentCount++
+    }
+
+    fun updateCapacity(capacity: Int) {
+        this.capacity = capacity
     }
 
     fun isEnrollmentFull(): Boolean = currentEnrollmentCount == capacity
