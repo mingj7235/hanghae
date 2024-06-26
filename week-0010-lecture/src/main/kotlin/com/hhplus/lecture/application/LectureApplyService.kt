@@ -1,6 +1,7 @@
 package com.hhplus.lecture.application
 
 import com.hhplus.lecture.application.dto.LectureApplyServiceDto
+import com.hhplus.lecture.common.exception.errors.LectureException
 import com.hhplus.lecture.common.type.ApplyStatus
 import com.hhplus.lecture.domain.entity.Lecture
 import com.hhplus.lecture.domain.entity.Student
@@ -83,4 +84,13 @@ class LectureApplyService(
             applyStatus = ApplyStatus.FAILED,
         )
     }
+
+    fun getLectures(): List<LectureApplyServiceDto.Lecture> =
+        lectureManager
+            .findUpcomingLectures()
+            .map {
+                LectureApplyServiceDto.Lecture.of(it)
+            }.ifEmpty {
+                throw LectureException.LectureNotfound()
+            }
 }

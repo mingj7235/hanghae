@@ -12,6 +12,8 @@ class LectureRepositoryImpl(
 ) : LectureRepository {
     override fun findById(lectureId: Long): Lecture? = jpaLectureRepository.findById(lectureId).getOrNull()
 
+    override fun findAll(): List<Lecture> = jpaLectureRepository.findAll()
+
     override fun save(lecture: Lecture) {
         jpaLectureRepository.save(lecture)
     }

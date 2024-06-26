@@ -5,6 +5,8 @@ import com.hhplus.lecture.domain.entity.Lecture
 interface LectureRepository {
     fun findById(lectureId: Long): Lecture?
 
+    fun findAll(): List<Lecture>
+
     fun save(lecture: Lecture)
 
     fun deleteAll()
