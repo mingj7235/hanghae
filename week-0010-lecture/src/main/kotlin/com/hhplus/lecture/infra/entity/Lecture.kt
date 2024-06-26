@@ -31,10 +31,10 @@ class Lecture(
         protected set
 
     @Column(name = "capacity", nullable = false)
-    var capacity: Int = capacity
+    var capacity: Int = 30
         protected set
 
-    @Column(name = "capacity", nullable = false)
+    @Column(name = "current_enrollemnt_count", nullable = false)
     var currentEnrollmentCount: Int = 0
 
     fun increaseCurrentEnrollmentCount() {
