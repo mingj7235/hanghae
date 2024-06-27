@@ -19,11 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.test.annotation.Rollback
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.event.annotation.AfterTestExecution
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 /**
@@ -33,6 +35,8 @@ import java.time.LocalDateTime
  */
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
+@Rollback
 @TestPropertySource(locations = ["classpath:application-test.yml"])
 class LectureApplyControllerTest(
     @Autowired private val objectMapper: ObjectMapper,
@@ -84,7 +88,7 @@ class LectureApplyControllerTest(
 
     @Nested
     @DisplayName("[apply] 특강 수강 신청 API 통합 테스트")
-    inner class LectureApplyTest {
+    open inner class LectureApplyTest {
         @Test
         fun `존재하지 않는 학생이 특강을 신청했을 경우 예외가 발생한다`() {
             val nonExistStudentId = NON_EXISTED_ID
@@ -128,6 +132,8 @@ class LectureApplyControllerTest(
         }
 
         @Test
+        @Transactional
+        @Rollback
         fun `특강 신청 시작 시점 전에 신청을 했다면 예외가 발생한다`() {
             val studentId = 1L
             val lectureId = 2L // NotOpenedLecture
@@ -149,6 +155,8 @@ class LectureApplyControllerTest(
         }
 
         @Test
+        @Transactional
+        @Rollback
         fun `이미 종료된 강의를 신청을 했다면 예외가 발생한다`() {
             val studentId = 1L
             val lectureId = 3L // ClosedLecture
@@ -249,6 +257,8 @@ class LectureApplyControllerTest(
         }
 
         @Test
+        @Transactional
+        @Rollback
         fun `수강신청이 성공한다면 applyHistory 에도 성공한 기록이 올바르게 저장된다`() {
             // given
             val studentId = 1L
@@ -300,6 +310,92 @@ class LectureApplyControllerTest(
                 .andExpect {
                     status { isBadRequest() }
                     jsonPath("$.message") { value("Not found lecture") }
+                }
+        }
+    }
+
+    @Nested
+    @DisplayName("[getApplyStatus] 강의 수강 신청 여부 확인 API 테스트")
+    inner class GetApplyStatusTest {
+        @Test
+        @Transactional
+        @Rollback
+        fun `수강 신청을 성공 한 내역이 있다면 성공을 반환한다`() {
+            val student = studentRepository.save(Student("Student"))
+            val lecture =
+                lectureRepository.save(
+                    Lecture(
+                        title = "Lecture",
+                        applyStartAt = LocalDateTime.now().minusDays(1),
+                        lectureAt = LocalDateTime.now().plusDays(5),
+                    ),
+                )
+
+            applyHistoryRepository.save(
+                ApplyHistory(
+                    student,
+                    lecture,
+                    applyStatus = ApplyStatus.COMPLETED,
+                ),
+            )
+
+            val lectureId = lecture.id
+            val studentId = student.id
+
+            mockMvc
+                .get("/lectures/$lectureId/application/$studentId")
+                .andExpect {
+                    status { isOk() }
+                    jsonPath("$.lectureId") { value(lectureId) }
+                    jsonPath("$.lectureTitle") { value(lecture.title) }
+                    jsonPath("$.applyStatus") { value("COMPLETED") }
+                }
+        }
+
+        @Test
+        @Transactional
+        @Rollback
+        fun `수강 신청을 실패한 내역만 있다면 실패를 반환한다`() {
+            val student = studentRepository.save(Student("Student"))
+            val lecture =
+                lectureRepository.save(
+                    Lecture(
+                        title = "Lecture",
+                        applyStartAt = LocalDateTime.now().minusDays(1),
+                        lectureAt = LocalDateTime.now().plusDays(5),
+                    ),
+                )
+
+            applyHistoryRepository.save(
+                ApplyHistory(
+                    student,
+                    lecture,
+                    applyStatus = ApplyStatus.FAILED,
+                ),
+            )
+
+            val lectureId = lecture.id
+            val studentId = student.id
+
+            mockMvc
+                .get("/lectures/$lectureId/application/$studentId")
+                .andExpect {
+                    status { isOk() }
+                    jsonPath("$.lectureId") { value(lectureId) }
+                    jsonPath("$.lectureTitle") { value(lecture.title) }
+                    jsonPath("$.applyStatus") { value("FAILED") }
+                }
+        }
+
+        @Test
+        fun `수강 신청한 내역이 없다면 실패를 반환한다`() {
+            mockMvc
+                .get("/lectures/1/application/1")
+                .andExpect {
+                    status { isOk() }
+                    jsonPath("$.lectureId") { value(1) }
+                    jsonPath("$.lectureTitle") { value("Lecture") }
+                    jsonPath("$.applyStatus") { value("FAILED") }
                 }
         }
     }
