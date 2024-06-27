@@ -14,9 +14,7 @@ class LectureRepositoryImpl(
 
     override fun findAll(): List<Lecture> = jpaLectureRepository.findAll()
 
-    override fun save(lecture: Lecture) {
-        jpaLectureRepository.save(lecture)
-    }
+    override fun save(lecture: Lecture): Lecture = jpaLectureRepository.save(lecture)
 
     override fun deleteAll() {
         jpaLectureRepository.deleteAll()

@@ -5,7 +5,6 @@ import com.hhplus.lecture.common.exception.errors.LectureException
 import com.hhplus.lecture.common.type.ApplyStatus
 import com.hhplus.lecture.domain.entity.Lecture
 import com.hhplus.lecture.domain.entity.Student
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,8 +14,6 @@ class LectureApplyService(
     private val studentManager: StudentManager,
     private val applyHistoryManager: ApplyHistoryManager,
 ) {
-    private val logger = LoggerFactory.getLogger(javaClass)
-
     @Transactional
     fun apply(applyDto: LectureApplyServiceDto.Apply): LectureApplyServiceDto.ApplyResult {
         val student = studentManager.findById(applyDto.studentId)
@@ -30,9 +27,11 @@ class LectureApplyService(
                 result = true,
             )
         }.getOrElse { e ->
-            logger.info(e.message)
             saveApplyFailedHistory(student = student, lecture = lecture)
-            LectureApplyServiceDto.ApplyResult(result = false)
+            LectureApplyServiceDto.ApplyResult(
+                result = false,
+                failedReason = e.message,
+            )
         }
     }
 

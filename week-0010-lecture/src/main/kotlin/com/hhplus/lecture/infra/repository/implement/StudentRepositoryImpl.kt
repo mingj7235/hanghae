@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository
 class StudentRepositoryImpl(
     private val jpaStudentRepository: JpaStudentRepository,
 ) : StudentRepository {
+    override fun save(student: Student): Student = jpaStudentRepository.save(student)
+
     override fun findById(studentId: Long): Student? = jpaStudentRepository.findByIdOrNull(studentId)
 
     override fun deleteAll() {

@@ -7,7 +7,7 @@ interface LectureRepository {
 
     fun findAll(): List<Lecture>
 
-    fun save(lecture: Lecture)
+    fun save(lecture: Lecture): Lecture
 
     fun deleteAll()
 }
