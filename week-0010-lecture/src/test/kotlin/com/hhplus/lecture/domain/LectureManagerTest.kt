@@ -43,7 +43,7 @@ class LectureManagerTest {
     inner class FindAvailableByIdTest {
         @Test
         fun `존재하지 않는 lectureId 로 강의를 조회하려고 하는 경우 예외를 리턴한다`() {
-            `when`(lectureRepository.findById(NON_EXISTED_LECTURE_ID)).thenReturn(null)
+            `when`(lectureRepository.findByLectureIdWithPessimisticLock(NON_EXISTED_LECTURE_ID)).thenReturn(null)
 
             val exception =
                 assertThrows<LectureException.LectureNotfound> {
@@ -61,11 +61,11 @@ class LectureManagerTest {
             val lecture =
                 Lecture(
                     title = LECTURE_TITLE,
-                    applyStartAt = LocalDateTime.of(2024, 6, 27, 13, 0),
-                    lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
+                    applyStartAt = LocalDateTime.now().plusDays(1),
+                    lectureAt = LocalDateTime.now().plusDays(5),
                 )
 
-            `when`(lectureRepository.findById(lectureId)).thenReturn(lecture)
+            `when`(lectureRepository.findByLectureIdWithPessimisticLock(lectureId)).thenReturn(lecture)
 
             val exception =
                 assertThrows<LectureException.InvalidLectureApplyDateTime> {
@@ -83,11 +83,11 @@ class LectureManagerTest {
             val lecture =
                 Lecture(
                     title = LECTURE_TITLE,
-                    applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
-                    lectureAt = LocalDateTime.of(2024, 6, 25, 13, 0),
+                    applyStartAt = LocalDateTime.now().minusDays(5),
+                    lectureAt = LocalDateTime.now().minusDays(3),
                 )
 
-            `when`(lectureRepository.findById(lectureId)).thenReturn(lecture)
+            `when`(lectureRepository.findByLectureIdWithPessimisticLock(lectureId)).thenReturn(lecture)
 
             val exception =
                 assertThrows<LectureException.InvalidLectureApplyDateTime> {
@@ -105,11 +105,11 @@ class LectureManagerTest {
             val lecture =
                 Lecture(
                     title = LECTURE_TITLE,
-                    applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
-                    lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
+                    applyStartAt = LocalDateTime.now().minusDays(1),
+                    lectureAt = LocalDateTime.now().plusDays(5),
                 )
 
-            `when`(lectureRepository.findById(lectureId)).thenReturn(lecture)
+            `when`(lectureRepository.findByLectureIdWithPessimisticLock(lectureId)).thenReturn(lecture)
 
             val availableLecture = lectureManager.findAvailableById(lectureId)
 
@@ -128,13 +128,13 @@ class LectureManagerTest {
             val lecture =
                 Lecture(
                     title = LECTURE_TITLE,
-                    applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
-                    lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
+                    applyStartAt = LocalDateTime.now().minusDays(1),
+                    lectureAt = LocalDateTime.now().plusDays(5),
                 )
             lecture.updateCapacity(1)
             lecture.increaseCurrentEnrollmentCount()
 
-            `when`(lectureRepository.findById(lectureId)).thenReturn(lecture)
+            `when`(lectureRepository.findByLectureIdWithPessimisticLock(lectureId)).thenReturn(lecture)
 
             val exception =
                 assertThrows<LectureException.EnrollmentFull> {
