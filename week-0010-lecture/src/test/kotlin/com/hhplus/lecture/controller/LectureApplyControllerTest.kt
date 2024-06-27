@@ -22,6 +22,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.event.annotation.AfterTestExecution
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import java.time.LocalDateTime
 
@@ -271,6 +272,34 @@ class LectureApplyControllerTest(
 
                     val applyHistory = applyHistoryRepository.findByStudentIdAndLectureId(studentId, lectureId)
                     assertThat(applyHistory[0].applyStatus).isEqualTo(ApplyStatus.COMPLETED)
+                }
+        }
+    }
+
+    @Nested
+    @DisplayName("[getLectures] 강의 리스트 조회 API 테스트")
+    inner class GetLecturesTest {
+        @Test
+        fun `현재 수강신청 가능한 강의 1개, 앞으로 열릴 강의 1개, 종료된 강의 1개가 있다면 종료된 강의를 제외한 다른 2개의 강의를 리턴한다 `() {
+            mockMvc
+                .get("/lectures")
+                .andExpect {
+                    status { isOk() }
+                    jsonPath("$.size()") { value(2) }
+                    jsonPath("$[0].lectureTitle") { value("Lecture") }
+                    jsonPath("$[1].lectureTitle") { value("NotOpenedLecture") }
+                }
+        }
+
+        @Test
+        fun `현재 수강 신청이 가능하거나 열리지 않은 강의가 없다면 예외를 리턴한다`() {
+            lectureRepository.deleteAll()
+
+            mockMvc
+                .get("/lectures")
+                .andExpect {
+                    status { isBadRequest() }
+                    jsonPath("$.message") { value("Not found lecture") }
                 }
         }
     }
