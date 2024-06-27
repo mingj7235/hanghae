@@ -17,4 +17,6 @@ class StudentRepositoryImpl(
     override fun deleteAll() {
         jpaStudentRepository.deleteAll()
     }
+
+    override fun findAll(): List<Student> = jpaStudentRepository.findAll()
 }

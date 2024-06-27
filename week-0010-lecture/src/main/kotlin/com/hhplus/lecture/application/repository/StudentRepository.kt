@@ -8,4 +8,6 @@ interface StudentRepository {
     fun findById(studentId: Long): Student?
 
     fun deleteAll()
+
+    fun findAll(): List<Student>
 }

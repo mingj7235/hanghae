@@ -12,6 +12,8 @@ class LectureRepositoryImpl(
     override fun findByLectureIdWithPessimisticLock(lectureId: Long): Lecture? =
         jpaLectureRepository.findByLectureIdWithPessimisticLock(lectureId)
 
+    override fun findById(lectureId: Long): Lecture? = jpaLectureRepository.findById(lectureId).get()
+
     override fun findAll(): List<Lecture> = jpaLectureRepository.findAll()
 
     override fun save(lecture: Lecture): Lecture = jpaLectureRepository.save(lecture)
