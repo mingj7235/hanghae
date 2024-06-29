@@ -19,13 +19,17 @@ class ApplyHistoryManager(
         studentId: Long,
         lectureId: Long,
     ) {
-        if (applyHistoryRepository
-                .findByStudentIdAndLectureId(studentId, lectureId)
-                .any { it.applyStatus == ApplyStatus.COMPLETED }
-        ) {
+        if (hasApplied(studentId, lectureId)) {
             throw ApplyHistoryException.AlreadyApplied()
         }
     }
+
+    fun hasApplied(
+        studentId: Long,
+        lectureId: Long,
+    ) = applyHistoryRepository
+        .findByStudentIdAndLectureId(studentId, lectureId)
+        .any { it.applyStatus == ApplyStatus.COMPLETED }
 
     fun save(
         student: Student,

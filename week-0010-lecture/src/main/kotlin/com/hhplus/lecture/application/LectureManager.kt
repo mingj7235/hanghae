@@ -12,7 +12,7 @@ class LectureManager(
 ) {
     fun findAvailableById(lectureId: Long): Lecture {
         val lecture =
-            lectureRepository.findById(lectureId)
+            lectureRepository.findByLectureIdWithPessimisticLock(lectureId)
                 ?: throw LectureException.LectureNotfound()
 
         validate(

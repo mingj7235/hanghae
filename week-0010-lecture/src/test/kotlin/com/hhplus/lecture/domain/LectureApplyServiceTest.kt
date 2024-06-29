@@ -197,6 +197,70 @@ class LectureApplyServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("LectureApplyService 의 getApplyStatus 메서드를 테스트한다.")
+    inner class GetApplyStatusTest {
+        @Test
+        fun `학생이 수강신청을 한 내역중에 성공이 있다면 성공을 반환한다`() {
+            // given
+            val studentId = 0L
+            val lectureId = 0L
+            val student = Student("Student")
+            val lecture =
+                Lecture(
+                    title = LECTURE_TITLE,
+                    applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
+                    lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
+                )
+
+            `given`(studentManager.findById(studentId)).willReturn(student)
+            `given`(lectureManager.findAvailableById(lectureId)).willReturn(lecture)
+            `given`(applyHistoryManager.hasApplied(studentId, lectureId)).willReturn(true)
+
+            // when
+            val result = lectureApplyService.getApplyStatus(lectureId, studentId)
+
+            // then
+            assertThat(result.lectureId).isEqualTo(lectureId)
+            assertThat(result.lectureTitle).isEqualTo(LECTURE_TITLE)
+            assertThat(result.applyStatus).isEqualTo(ApplyStatus.COMPLETED)
+
+            verify(lectureManager).findAvailableById(lectureId)
+            verify(studentManager).findById(studentId)
+            verify(applyHistoryManager).hasApplied(studentId, lectureId)
+        }
+
+        @Test
+        fun `학생이 수강신청을 한 내역중에 실패만 있다면 실패를 반환한다`() {
+            // given
+            val studentId = 0L
+            val lectureId = 0L
+            val student = Student("Student")
+            val lecture =
+                Lecture(
+                    title = LECTURE_TITLE,
+                    applyStartAt = LocalDateTime.of(2024, 6, 20, 13, 0),
+                    lectureAt = LocalDateTime.of(2024, 6, 30, 13, 0),
+                )
+
+            `given`(studentManager.findById(studentId)).willReturn(student)
+            `given`(lectureManager.findAvailableById(lectureId)).willReturn(lecture)
+            `given`(applyHistoryManager.hasApplied(studentId, lectureId)).willReturn(false)
+
+            // when
+            val result = lectureApplyService.getApplyStatus(lectureId, studentId)
+
+            // then
+            assertThat(result.lectureId).isEqualTo(lectureId)
+            assertThat(result.lectureTitle).isEqualTo(LECTURE_TITLE)
+            assertThat(result.applyStatus).isEqualTo(ApplyStatus.FAILED)
+
+            verify(lectureManager).findAvailableById(lectureId)
+            verify(studentManager).findById(studentId)
+            verify(applyHistoryManager).hasApplied(studentId, lectureId)
+        }
+    }
+
     companion object {
         const val LECTURE_TITLE = "TEST TITLE"
     }
