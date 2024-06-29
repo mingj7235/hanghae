@@ -9,12 +9,14 @@ object LectureApplyResponse {
     data class ApplyResult(
         val lectureTitle: String? = null,
         val result: Boolean,
+        val failedReason: String? = null,
     ) {
         companion object {
             fun of(applyResultDto: LectureApplyServiceDto.ApplyResult): ApplyResult =
                 ApplyResult(
                     lectureTitle = applyResultDto.lectureTitle,
                     result = applyResultDto.result,
+                    failedReason = applyResultDto.failedReason,
                 )
         }
     }
