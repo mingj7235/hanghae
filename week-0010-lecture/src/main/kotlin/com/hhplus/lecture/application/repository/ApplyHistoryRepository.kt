@@ -1,13 +1,18 @@
-package com.hhplus.lecture.infra.repository.jpa
+package com.hhplus.lecture.application.repository
 
 import com.hhplus.lecture.domain.entity.ApplyHistory
-import org.springframework.data.jpa.repository.JpaRepository
 
-interface JpaApplyHistoryRepository : JpaRepository<ApplyHistory, Long> {
+interface ApplyHistoryRepository {
     fun findByStudentIdAndLectureId(
         studentId: Long,
         lectureId: Long,
     ): List<ApplyHistory>
 
     fun findByStudentId(studentId: Long): List<ApplyHistory>
+
+    fun findAll(): List<ApplyHistory>
+
+    fun save(applyHistory: ApplyHistory)
+
+    fun deleteAll()
 }

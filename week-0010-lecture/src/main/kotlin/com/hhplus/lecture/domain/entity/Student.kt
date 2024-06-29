@@ -1,4 +1,4 @@
-package com.hhplus.lecture.infra.entity
+package com.hhplus.lecture.domain.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -8,11 +8,13 @@ import jakarta.persistence.Id
 
 @Entity
 class Student(
+    name: String,
+) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0
+
     @Column(name = "name", nullable = false)
-    val name: String,
-    @Column(name = "email", nullable = false, unique = true)
-    val email: String,
-) : BaseEntity()
+    var name: String = name
+        protected set
+}

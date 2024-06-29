@@ -1,6 +1,6 @@
 package com.hhplus.lecture.common.type
 
-enum class LectureAvailableStatus {
-    OPEN,
+enum class LectureStatus {
+    OPENED,
     CLOSED,
 }

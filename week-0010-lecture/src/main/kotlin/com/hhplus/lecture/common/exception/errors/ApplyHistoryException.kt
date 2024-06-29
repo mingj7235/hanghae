@@ -1,7 +1,7 @@
 package com.hhplus.lecture.common.exception.errors
 
-open class StudentException(
+open class ApplyHistoryException(
     errorMessage: String,
 ) : RuntimeException(errorMessage) {
-    class StudentNotfound : StudentException("Not found student")
+    class AlreadyApplied : ApplyHistoryException("Already applied")
 }
