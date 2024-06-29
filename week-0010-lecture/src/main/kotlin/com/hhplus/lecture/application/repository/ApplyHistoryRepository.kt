@@ -8,6 +8,10 @@ interface ApplyHistoryRepository {
         lectureId: Long,
     ): List<ApplyHistory>
 
+    fun findByStudentId(studentId: Long): List<ApplyHistory>
+
+    fun findAll(): List<ApplyHistory>
+
     fun save(applyHistory: ApplyHistory)
 
     fun deleteAll()

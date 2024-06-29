@@ -17,6 +17,10 @@ class ApplyHistoryRepositoryImpl(
         lectureId = lectureId,
     )
 
+    override fun findByStudentId(studentId: Long): List<ApplyHistory> = jpaApplyHistoryRepository.findByStudentId(studentId)
+
+    override fun findAll(): List<ApplyHistory> = jpaApplyHistoryRepository.findAll()
+
     override fun save(applyHistory: ApplyHistory) {
         jpaApplyHistoryRepository.save(applyHistory)
     }

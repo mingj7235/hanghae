@@ -40,7 +40,7 @@ class StudentManagerTest {
 
         assertThat(exception)
             .message()
-            .contains("Not found user")
+            .contains("Not found student")
     }
 
     @Test

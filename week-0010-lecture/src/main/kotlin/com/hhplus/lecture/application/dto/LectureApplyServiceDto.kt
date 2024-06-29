@@ -1,5 +1,9 @@
 package com.hhplus.lecture.application.dto
 
+import com.hhplus.lecture.common.type.ApplyStatus
+import com.hhplus.lecture.common.type.LectureStatus
+import java.time.LocalDateTime
+
 object LectureApplyServiceDto {
     data class Apply(
         val studentId: Long,
@@ -9,6 +13,7 @@ object LectureApplyServiceDto {
     data class ApplyResult(
         val result: Boolean,
         val lectureTitle: String? = null,
+        val failedReason: String? = null,
     )
 
     data class Student(
@@ -18,7 +23,33 @@ object LectureApplyServiceDto {
 
     data class Lecture(
         val lectureId: Long,
-        val title: String,
+        val lectureTitle: String,
         val capacity: Int,
+        val currentEnrollmentCount: Int,
+        val lectureAt: LocalDateTime,
+        val lectureStatus: LectureStatus,
+    ) {
+        companion object {
+            fun of(lectureEntity: com.hhplus.lecture.domain.entity.Lecture): Lecture =
+                Lecture(
+                    lectureId = lectureEntity.id,
+                    lectureTitle = lectureEntity.title,
+                    capacity = lectureEntity.capacity,
+                    currentEnrollmentCount = lectureEntity.currentEnrollmentCount,
+                    lectureAt = lectureEntity.lectureAt,
+                    lectureStatus =
+                        if (lectureEntity.isEnrollmentFull()) {
+                            LectureStatus.CLOSED
+                        } else {
+                            LectureStatus.OPENED
+                        },
+                )
+        }
+    }
+
+    data class Status(
+        val lectureId: Long,
+        val lectureTitle: String,
+        val applyStatus: ApplyStatus,
     )
 }

@@ -12,7 +12,7 @@ class LectureManager(
 ) {
     fun findAvailableById(lectureId: Long): Lecture {
         val lecture =
-            lectureRepository.findById(lectureId)
+            lectureRepository.findByLectureIdWithPessimisticLock(lectureId)
                 ?: throw LectureException.LectureNotfound()
 
         validate(
@@ -41,4 +41,12 @@ class LectureManager(
         val now = LocalDateTime.now()
         if (now.isBefore(applyStartAt) || now.isAfter(lectureAt)) throw LectureException.InvalidLectureApplyDateTime()
     }
+
+    /**
+     * 아직 실제 강의가 시작하지 않은 강의들만 찾아서 리턴한다.
+     */
+    fun findUpcomingLectures(): List<Lecture> =
+        lectureRepository.findAll().filter {
+            it.lectureAt.isAfter(LocalDateTime.now())
+        }
 }
